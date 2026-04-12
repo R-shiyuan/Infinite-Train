@@ -2,30 +2,31 @@ using UnityEngine;
 
 public class PlayerInteract : MonoBehaviour
 {
-    [Header("交互检测范围")]
-    public float interactRange = 5f; // 2D项目建议调大，避免点不到
-
     void Update()
     {
-        // 鼠标左键点击触发交互
+        // 鼠标左键点击
         if (Input.GetMouseButtonDown(0))
         {
-            // 1. 把屏幕坐标转成2D世界射线
-            Vector3 mousePos = Input.mousePosition;
-            Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
-            Ray2D ray = new Ray2D(worldPos, Vector2.zero);
+            HandleClick();
+        }
+    }
 
-            // 2. 2D射线检测，正确使用RaycastHit2D接收结果
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, interactRange);
+    void HandleClick()
+    {
+        // 1. 获取鼠标点击的世界位置
+        Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            // 3. 检测到碰撞体，尝试获取交互接口
-            if (hit.collider != null)
+        // 2. 发射一根点射线检测碰撞
+        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPos, Vector2.zero);
+
+        if (hit.collider != null)
+        {
+            // 尝试获取交互接口
+            Interactable target = hit.collider.GetComponent<Interactable>();
+            if (target != null)
             {
-                Interactable target = hit.collider.GetComponent<Interactable>();
-                if (target != null)
-                {
-                    target.OnInteract();
-                }
+                // 直接调用，具体的“距离够不够”由 NPC 脚本内部判断
+                target.OnInteract();
             }
         }
     }
