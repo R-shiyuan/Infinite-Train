@@ -42,3 +42,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: SortingTexture
+    uniqueID: 2667966895
+    locked: 0
+  - name: Bowl
+    uniqueID: 584964265
+    locked: 0
