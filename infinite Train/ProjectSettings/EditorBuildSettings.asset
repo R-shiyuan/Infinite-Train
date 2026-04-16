@@ -20,4 +20,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/car-3.unity
     guid: 946dfa5f3ea67414ba274dcd63270e8d
+  - enabled: 1
+    path: Assets/Scenes/miniGame_1a.unity
+    guid: a9a2854b2f3faf7488182dd6764c3ccd
+  - enabled: 1
+    path: Assets/Scenes/miniGame_1b.unity
+    guid: e62c6e4c54dab6d49a38242086ffb422
+  - enabled: 1
+    path: Assets/Scenes/miniGame_1c.unity
+    guid: da952bf1e77e6724fb479f2656ade630
   m_configObjects: {}
