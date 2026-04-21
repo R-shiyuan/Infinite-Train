@@ -70,7 +70,7 @@ public class NPC : MonoBehaviour, Interactable
         // 2. 调用 UI 控制器开启全局对话 UI (仅开启面板，不再手动填参)
         if (DialogueUIController.Instance != null)
         {
-            DialogueUIController.Instance.ShowDialogue();
+            DialogueUIController.Instance.ShowDialogue("NPC名称", "这里是对话内容", null, true);
         }
 
         // 3. 锁定玩家移动
