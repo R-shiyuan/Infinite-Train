@@ -1,14 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class DialogueUIController : MonoBehaviour
+public class DialogueUIController : MonoBehaviour, IPointerClickHandler
 {
     public static DialogueUIController Instance;
 
-    [Header("状态管理")]
-    public GameObject dialoguePanel; // 挂在 @DialogueUGUI 上
-
-    [Header("UI 槽位引用")]
+    [Header("UI 引用")]
+    public GameObject dialoguePanel;
     public Image leftImage;
     public Image rightImage;
     public Text nameText;
@@ -20,29 +19,52 @@ public class DialogueUIController : MonoBehaviour
         if (dialoguePanel != null) dialoguePanel.SetActive(false);
     }
 
-    public void ShowDialogue(string characterName, string content, Sprite portrait, bool isLeft)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        // 1. 激活面板
+        if (dialoguePanel != null && dialoguePanel.activeSelf)
+        {
+            DialogueBridge bridge = FindObjectOfType<DialogueBridge>();
+            if (bridge != null)
+            {
+                bridge.Proceed();
+            }
+        }
+    }
+
+    // 核心修改：增加了参数默认值 (portrait = null, isLeft = true)
+    // 这样以后调用时直接写 ShowDialogue("名字", "内容"); 即可，不再报错
+    public void ShowDialogue(string characterName, string content, Sprite portrait = null, bool isLeft = true)
+    {
         if (dialoguePanel != null) dialoguePanel.SetActive(true);
 
-        // 2. 联动背景变暗 (调用你原本的 UIManager)
         if (DialogueUIManager.Instance != null)
         {
             DialogueUIManager.Instance.StartDialogueUI();
         }
 
-        // 3. 更新内容
-        if (nameText != null) nameText.text = characterName;
         if (contentText != null) contentText.text = content;
 
-        UpdatePortraits(portrait, isLeft);
+        bool isMonologue = string.IsNullOrEmpty(characterName) || characterName == "none";
+
+        if (nameText != null)
+        {
+            nameText.gameObject.SetActive(!isMonologue);
+            nameText.text = characterName;
+        }
+
+        if (leftImage != null) leftImage.gameObject.SetActive(!isMonologue);
+        if (rightImage != null) rightImage.gameObject.SetActive(!isMonologue);
+
+        if (!isMonologue)
+        {
+            UpdatePortraits(portrait, isLeft);
+        }
     }
 
     public void HideDialogue()
     {
         if (dialoguePanel != null) dialoguePanel.SetActive(false);
 
-        // 联动背景恢复
         if (DialogueUIManager.Instance != null)
         {
             DialogueUIManager.Instance.EndDialogueUI();
@@ -51,15 +73,18 @@ public class DialogueUIController : MonoBehaviour
 
     private void UpdatePortraits(Sprite portrait, bool isLeft)
     {
+        // 增加对 portrait 是否为空的防御性检查
+        if (portrait == null) return;
+
         if (isLeft)
         {
-            if (leftImage != null) { leftImage.sprite = portrait; leftImage.gameObject.SetActive(true); leftImage.color = Color.white; }
-            if (rightImage != null) rightImage.color = new Color(0.5f, 0.5f, 0.5f, 1f); // 非焦点变暗
+            if (leftImage != null) { leftImage.sprite = portrait; leftImage.color = Color.white; }
+            if (rightImage != null) rightImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
         }
         else
         {
-            if (rightImage != null) { rightImage.sprite = portrait; rightImage.gameObject.SetActive(true); rightImage.color = Color.white; }
-            if (leftImage != null) leftImage.color = new Color(0.5f, 0.5f, 0.5f, 1f); // 非焦点变暗
+            if (rightImage != null) { rightImage.sprite = portrait; rightImage.color = Color.white; }
+            if (leftImage != null) leftImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
         }
     }
 }

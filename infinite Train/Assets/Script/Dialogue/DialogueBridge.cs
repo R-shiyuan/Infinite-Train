@@ -1,31 +1,72 @@
 using UnityEngine;
-using NodeCanvas.DialogueTrees; // 这里你的程序集引用应该没问题了
-using ParadoxNotion;
+using NodeCanvas.DialogueTrees;
+using System.Collections.Generic;
 
 public class DialogueBridge : MonoBehaviour
 {
-    void Awake()
-    {
-        // 关键点：订阅事件，而不是修改源码！
-        DialogueTree.OnSubtitlesRequest += OnSubtitlesRequest;
-    }
+    private List<DialogueRow> currentPlotRows;
+    private int currentIndex = 0;
+    private SubtitlesRequestInfo currentInfo; // 缓存当前的 NodeCanvas 请求
+    private bool isWaitingForClick = false;
 
-    void OnDestroy()
-    {
-        DialogueTree.OnSubtitlesRequest -= OnSubtitlesRequest;
-    }
+    void Awake() { DialogueTree.OnSubtitlesRequest += OnSubtitlesRequest; }
+    void OnDestroy() { DialogueTree.OnSubtitlesRequest -= OnSubtitlesRequest; }
 
     void OnSubtitlesRequest(SubtitlesRequestInfo info)
     {
-        // 现在你的所有业务逻辑都可以写在这里，完全不用碰插件原文件
+        currentInfo = info; // 拦截请求，暂不调用 info.Continue()
         string plotID = info.statement.text;
-        var dialogueRows = CSVManager.Instance.GetPlot(plotID);
 
-        if (dialogueRows != null && dialogueRows.Count > 0)
+        if (currentPlotRows == null || currentPlotRows[0].plotID != plotID)
         {
-            var row = dialogueRows[0];
-            // 调用你自己的 UI 控制器
-            DialogueUIController.Instance.ShowDialogue(row.actorName, row.content, null, true);
+            currentPlotRows = CSVManager.Instance.GetPlot(plotID);
+            currentIndex = 0;
         }
+
+        DisplayNextLine();
+    }
+
+    public void DisplayNextLine()
+    {
+        if (currentPlotRows != null && currentIndex < currentPlotRows.Count)
+        {
+            DialogueRow row = currentPlotRows[currentIndex];
+
+            if (row.plotID == "END")
+            {
+                FinishDialogue();
+                return;
+            }
+
+            // 更新 UI
+            DialogueUIController.Instance.ShowDialogue(row.actorName, row.content, null, true);
+            currentIndex++;
+            isWaitingForClick = true;
+        }
+        else
+        {
+            FinishDialogue();
+        }
+    }
+
+    public void Proceed() // 供 UI 按钮调用的方法
+    {
+        if (isWaitingForClick)
+        {
+            isWaitingForClick = false;
+            DisplayNextLine(); // 显示下一行
+        }
+        else if (currentInfo != null)
+        {
+            currentInfo.Continue(); // 全部播完，放行
+            currentInfo = null;
+        }
+    }
+
+    void FinishDialogue()
+    {
+        DialogueUIController.Instance.HideDialogue();
+        if (currentInfo != null) currentInfo.Continue();
+        currentInfo = null;
     }
 }
