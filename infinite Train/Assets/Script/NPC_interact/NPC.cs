@@ -15,7 +15,7 @@ public class NPC : MonoBehaviour, Interactable
 
     private bool isPlayerNearby = false;
     private bool isMouseOver = false;
-    private bool isTalking = false; // 新增：标记是否正在对话
+    private bool isTalking = false;
     private Collider2D npcCollider;
 
     void Awake()
@@ -39,25 +39,14 @@ public class NPC : MonoBehaviour, Interactable
         RefreshHighlightState();
     }
 
-    private void OnMouseEnter()
-    {
-        isMouseOver = true;
-    }
-
-    private void OnMouseExit()
-    {
-        isMouseOver = false;
-    }
+    private void OnMouseEnter() { isMouseOver = true; }
+    private void OnMouseExit() { isMouseOver = false; }
 
     private void RefreshHighlightState()
     {
         if (outline != null)
         {
-            // 逻辑修改：
-            // 如果正在对话 -> 强制高亮（常亮）
-            // 如果没在对话 -> 只有 范围内 + 悬停 + 允许交互 才会亮
             bool shouldShow = isTalking || (isPlayerNearby && isMouseOver && canInteract);
-
             if (outline.gameObject.activeSelf != shouldShow)
             {
                 outline.ShowOutline(shouldShow);
@@ -73,12 +62,12 @@ public class NPC : MonoBehaviour, Interactable
             return;
         }
 
-        Debug.Log("进入对话模式，锁定高亮并显示 UI");
+        Debug.Log("进入对话模式");
 
         // 1. 状态锁定
         isTalking = true;
 
-        // 2. 调用 UI 控制器显示所有 UI（包含 Dimmer 等）
+        // 2. 调用 UI 控制器开启全局对话 UI (仅开启面板，不再手动填参)
         if (DialogueUIController.Instance != null)
         {
             DialogueUIController.Instance.ShowDialogue();
@@ -90,23 +79,37 @@ public class NPC : MonoBehaviour, Interactable
             PlayerController.Instance.SetCanMove(false);
         }
 
-        // 4. 触发对话
+        // 4. 触发 NodeCanvas 对话树
+        // 之后由 DialogueUGUI (NodeCanvas自带) 或你自定义的接口去对接 CSV 数据
         if (dialogueController != null)
         {
             dialogueController.StartDialogue();
         }
     }
 
-    // 新增：由 CloseDialogueAction 脚本在对话结束时调用
     public void EndConversation()
     {
         isTalking = false;
+
+        // 1. 恢复控制
         if (outline != null) outline.ShowOutline(false);
 
-        // 恢复玩家移动
         if (PlayerController.Instance != null)
         {
             PlayerController.Instance.SetCanMove(true);
+        }
+
+        // 2. 隐藏对话 UI
+        if (DialogueUIController.Instance != null)
+        {
+            DialogueUIController.Instance.HideDialogue();
+        }
+
+        // 3. 触发消失检查
+        PresenceController pc = GetComponent<PresenceController>();
+        if (pc != null)
+        {
+            pc.CheckPresence();
         }
     }
 }

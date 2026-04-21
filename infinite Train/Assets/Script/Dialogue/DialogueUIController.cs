@@ -6,8 +6,7 @@ public class DialogueUIController : MonoBehaviour
     public static DialogueUIController Instance;
 
     [Header("状态管理")]
-    // 拖入 @DialogueUGUI，确保它关闭时子物体（Dimmer, BG等）全部隐藏
-    public GameObject dialoguePanel;
+    public GameObject dialoguePanel; // 挂在 @DialogueUGUI 上
 
     [Header("UI 槽位引用")]
     public Image leftImage;
@@ -18,73 +17,49 @@ public class DialogueUIController : MonoBehaviour
     void Awake()
     {
         Instance = this;
-
-        // 初始隐藏“全家桶”
-        if (dialoguePanel != null)
-        {
-            dialoguePanel.SetActive(false);
-        }
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
     }
 
-    /// <summary>
-    /// 进入对话状态：显示包含 Dimmer、背景、立绘在内的所有 UI
-    /// </summary>
-    public void ShowDialogue()
+    public void ShowDialogue(string characterName, string content, Sprite portrait, bool isLeft)
     {
-        if (dialoguePanel != null)
-        {
-            dialoguePanel.SetActive(true);
-            Debug.Log("对话 UI 全套已激活");
-        }
-    }
+        // 1. 激活面板
+        if (dialoguePanel != null) dialoguePanel.SetActive(true);
 
-    /// <summary>
-    /// 退出对话状态：关闭全套 UI
-    /// </summary>
-    public void HideDialogue()
-    {
-        if (dialoguePanel != null)
+        // 2. 联动背景变暗 (调用你原本的 UIManager)
+        if (DialogueUIManager.Instance != null)
         {
-            dialoguePanel.SetActive(false);
-            Debug.Log("对话 UI 已全部隐藏");
-        }
-    }
-
-    public void SetDialogue(string characterName, string content, Sprite portrait, bool isLeft)
-    {
-        // 念词前确保面板已打开
-        if (dialoguePanel != null && !dialoguePanel.activeSelf)
-        {
-            ShowDialogue();
+            DialogueUIManager.Instance.StartDialogueUI();
         }
 
+        // 3. 更新内容
         if (nameText != null) nameText.text = characterName;
         if (contentText != null) contentText.text = content;
 
         UpdatePortraits(portrait, isLeft);
     }
 
+    public void HideDialogue()
+    {
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+
+        // 联动背景恢复
+        if (DialogueUIManager.Instance != null)
+        {
+            DialogueUIManager.Instance.EndDialogueUI();
+        }
+    }
+
     private void UpdatePortraits(Sprite portrait, bool isLeft)
     {
         if (isLeft)
         {
-            if (leftImage != null)
-            {
-                leftImage.sprite = portrait;
-                leftImage.gameObject.SetActive(true);
-                leftImage.color = Color.white;
-            }
-            if (rightImage != null) rightImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+            if (leftImage != null) { leftImage.sprite = portrait; leftImage.gameObject.SetActive(true); leftImage.color = Color.white; }
+            if (rightImage != null) rightImage.color = new Color(0.5f, 0.5f, 0.5f, 1f); // 非焦点变暗
         }
         else
         {
-            if (rightImage != null)
-            {
-                rightImage.sprite = portrait;
-                rightImage.gameObject.SetActive(true);
-                rightImage.color = Color.white;
-            }
-            if (leftImage != null) leftImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+            if (rightImage != null) { rightImage.sprite = portrait; rightImage.gameObject.SetActive(true); rightImage.color = Color.white; }
+            if (leftImage != null) leftImage.color = new Color(0.5f, 0.5f, 0.5f, 1f); // 非焦点变暗
         }
     }
 }
