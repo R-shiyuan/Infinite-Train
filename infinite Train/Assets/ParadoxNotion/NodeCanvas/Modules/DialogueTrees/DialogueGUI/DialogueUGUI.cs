@@ -190,7 +190,7 @@ namespace NodeCanvas.DialogueTrees.UI.Examples
 
             if ( waitForInput ) {
                 waitInputIndicator.gameObject.SetActive(true);
-                while ( !Input.anyKeyDown ) {
+                while ( !anyKeyDown ) {
                     yield return null;
                 }
                 waitInputIndicator.gameObject.SetActive(false);
@@ -211,7 +211,7 @@ namespace NodeCanvas.DialogueTrees.UI.Examples
         }
 
         IEnumerator CheckInput(System.Action Do) {
-            while ( !Input.anyKeyDown ) {
+            while ( !anyKeyDown ) {
                 yield return null;
             }
             Do();
@@ -227,7 +227,7 @@ namespace NodeCanvas.DialogueTrees.UI.Examples
 
         ///----------------------------------------------------------------------------------------------
 
-        void OnMultipleChoiceRequest(MultipleChoiceRequestInfo info) {    //分支
+        void OnMultipleChoiceRequest(MultipleChoiceRequestInfo info) {
 
             optionsGroup.gameObject.SetActive(true);
             var buttonHeight = optionButton.GetComponent<RectTransform>().rect.height;
@@ -250,7 +250,7 @@ namespace NodeCanvas.DialogueTrees.UI.Examples
             if ( info.showLastStatement ) {
                 subtitlesGroup.gameObject.SetActive(true);
                 var newY = optionsGroup.position.y + optionsGroup.sizeDelta.y + 1;
-                //subtitlesGroup.position = new Vector3(subtitlesGroup.position.x, newY, subtitlesGroup.position.z);
+                subtitlesGroup.position = new Vector3(subtitlesGroup.position.x, newY, subtitlesGroup.position.z);
             }
 
             if ( info.availableTime > 0 ) {

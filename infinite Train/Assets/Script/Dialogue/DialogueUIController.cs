@@ -1,15 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class DialogueUIController : MonoBehaviour
+public class DialogueUIController : MonoBehaviour, IPointerClickHandler
 {
     public static DialogueUIController Instance;
 
-    [Header("状态管理")]
-    // 拖入 @DialogueUGUI，确保它关闭时子物体（Dimmer, BG等）全部隐藏
+    [Header("UI 引用")]
     public GameObject dialoguePanel;
-
-    [Header("UI 槽位引用")]
     public Image leftImage;
     public Image rightImage;
     public Text nameText;
@@ -18,72 +16,74 @@ public class DialogueUIController : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+    }
 
-        // 初始隐藏“全家桶”
-        if (dialoguePanel != null)
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (dialoguePanel != null && dialoguePanel.activeSelf)
         {
-            dialoguePanel.SetActive(false);
+            DialogueBridge bridge = FindObjectOfType<DialogueBridge>();
+            if (bridge != null)
+            {
+                bridge.Proceed();
+            }
         }
     }
 
-    /// <summary>
-    /// 进入对话状态：显示包含 Dimmer、背景、立绘在内的所有 UI
-    /// </summary>
-    public void ShowDialogue()
+    // 核心修改：增加了参数默认值 (portrait = null, isLeft = true)
+    // 这样以后调用时直接写 ShowDialogue("名字", "内容"); 即可，不再报错
+    public void ShowDialogue(string characterName, string content, Sprite portrait = null, bool isLeft = true)
     {
-        if (dialoguePanel != null)
-        {
-            dialoguePanel.SetActive(true);
-            Debug.Log("对话 UI 全套已激活");
-        }
-    }
+        if (dialoguePanel != null) dialoguePanel.SetActive(true);
 
-    /// <summary>
-    /// 退出对话状态：关闭全套 UI
-    /// </summary>
-    public void HideDialogue()
-    {
-        if (dialoguePanel != null)
+        if (DialogueUIManager.Instance != null)
         {
-            dialoguePanel.SetActive(false);
-            Debug.Log("对话 UI 已全部隐藏");
-        }
-    }
-
-    public void SetDialogue(string characterName, string content, Sprite portrait, bool isLeft)
-    {
-        // 念词前确保面板已打开
-        if (dialoguePanel != null && !dialoguePanel.activeSelf)
-        {
-            ShowDialogue();
+            DialogueUIManager.Instance.StartDialogueUI();
         }
 
-        if (nameText != null) nameText.text = characterName;
         if (contentText != null) contentText.text = content;
 
-        UpdatePortraits(portrait, isLeft);
+        bool isMonologue = string.IsNullOrEmpty(characterName) || characterName == "none";
+
+        if (nameText != null)
+        {
+            nameText.gameObject.SetActive(!isMonologue);
+            nameText.text = characterName;
+        }
+
+        if (leftImage != null) leftImage.gameObject.SetActive(!isMonologue);
+        if (rightImage != null) rightImage.gameObject.SetActive(!isMonologue);
+
+        if (!isMonologue)
+        {
+            UpdatePortraits(portrait, isLeft);
+        }
+    }
+
+    public void HideDialogue()
+    {
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+
+        if (DialogueUIManager.Instance != null)
+        {
+            DialogueUIManager.Instance.EndDialogueUI();
+        }
     }
 
     private void UpdatePortraits(Sprite portrait, bool isLeft)
     {
+        // 增加对 portrait 是否为空的防御性检查
+        if (portrait == null) return;
+
         if (isLeft)
         {
-            if (leftImage != null)
-            {
-                leftImage.sprite = portrait;
-                leftImage.gameObject.SetActive(true);
-                leftImage.color = Color.white;
-            }
+            if (leftImage != null) { leftImage.sprite = portrait; leftImage.color = Color.white; }
             if (rightImage != null) rightImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
         }
         else
         {
-            if (rightImage != null)
-            {
-                rightImage.sprite = portrait;
-                rightImage.gameObject.SetActive(true);
-                rightImage.color = Color.white;
-            }
+            if (rightImage != null) { rightImage.sprite = portrait; rightImage.color = Color.white; }
             if (leftImage != null) leftImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
         }
     }
