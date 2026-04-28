@@ -97,9 +97,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outline: {fileID: 4914683694828523364}
   dialogueController: {fileID: 821956280405773098}
-  presenceController: {fileID: 6719621338749817112}
   activeDistance: 2
   canInteract: 0
+  memorySprite: {fileID: 21300000, guid: cd9e5badee95b934783efb99010e299e, type: 3}
+  visualCenter: {fileID: 8864027366443781636}
 --- !u!114 &821956280405773098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,9 +160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: Ray_Actor
-  checkFinished: 1
   finishedKey: RAY_C1_Finished
-  checkUnlocked: 0
   unlockedKey: 
 --- !u!1 &1796042844993601831
 GameObject:
@@ -262,9 +261,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outline: {fileID: 0}
   dialogueController: {fileID: 0}
-  presenceController: {fileID: 0}
   activeDistance: 0.9
   canInteract: 1
+  memorySprite: {fileID: 0}
+  visualCenter: {fileID: 0}
 --- !u!1 &6385867290805071516
 GameObject:
   m_ObjectHideFlags: 0
