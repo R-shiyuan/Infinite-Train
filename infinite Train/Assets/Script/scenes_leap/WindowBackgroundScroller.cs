@@ -1,58 +1,39 @@
 using UnityEngine;
-using UnityEngine.UI;
 
-[RequireComponent(typeof(RawImage))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class WindowBackgroundScroller : MonoBehaviour
 {
     [Header("滚动速度")]
-    public float scrollSpeed = 1.0f;
+    public float scrollSpeed = 0.5f;
+    [Header("水平平铺次数（覆盖5个车窗）")]
+    public float tilingX = 5f;
 
-    private RawImage rawImage;
     private Material mat;
 
-    void Awake()
+    void Start()
     {
-        rawImage = GetComponent<RawImage>();
-        // 创建材质实例，避免影响其他物体
-        mat = new Material(rawImage.material);
-        rawImage.material = mat;
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        // 复制材质避免影响其他物体
+        mat = new Material(sr.material);
+        sr.material = mat;
+        // 设置纹理平铺（水平重复 tilingX 次）
+        mat.SetTextureScale("_MainTex", new Vector2(tilingX, 1f));
     }
 
     void Update()
     {
-        // 直接通过脚本控制速度，和Shader的逻辑对应
-        mat.SetFloat("_ScrollSpeed", scrollSpeed);
+        if (mat != null)
+            mat.SetFloat("_ScrollSpeed", scrollSpeed);
     }
 
-    /// <summary>
-    /// 切换背景图，保持无缝滚动
-    /// </summary>
     public void ChangeBackground(Texture2D newTex)
     {
-        if (newTex != null)
-        {
+        if (mat != null && newTex != null)
             mat.SetTexture("_MainTex", newTex);
-        }
-    }
-
-    /// <summary>
-    /// 暂停滚动
-    /// </summary>
-    public void Pause()
-    {
-        scrollSpeed = 0;
-    }
-
-    /// <summary>
-    /// 恢复滚动
-    /// </summary>
-    public void Resume()
-    {
-        scrollSpeed = 1.0f;
     }
 
     void OnDestroy()
     {
-        Destroy(mat);
+        if (mat != null) Destroy(mat);
     }
 }
