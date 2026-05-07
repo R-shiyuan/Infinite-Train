@@ -604,7 +604,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 846553690115565602, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
       propertyPath: m_Name
-      value: NPC_RAY
+      value: Parent
       objectReference: {fileID: 0}
     - target: {fileID: 1110261291402111462, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
       propertyPath: m_LocalPosition.x
@@ -646,32 +646,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4573348026803808605, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: canInteract
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6719621338749817112, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: finishedKey
-      value: RAY_C3_Finished
-      objectReference: {fileID: 0}
-    - target: {fileID: 6719621338749817112, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: checkFinished
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7512576827397468912, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: visualCenter
-      value: 
-      objectReference: {fileID: 1985603562}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
---- !u!4 &1985603562 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8864027366443781636, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-  m_PrefabInstance: {fileID: 1985603561}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2089177780
 PrefabInstance:
   m_ObjectHideFlags: 0

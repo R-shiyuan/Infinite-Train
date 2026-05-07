@@ -230,6 +230,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 610459954}
+  - component: {fileID: 610459955}
   m_Layer: 0
   m_Name: CSVManager
   m_TagString: Untagged
@@ -252,6 +253,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &610459955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 610459953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a0660ef81390724a80029b1064c7faa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &797951721
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -307,7 +320,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2111581302539854191, guid: cde502a48cc67fa4abb27eae2ec0b3e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 825105531}
   m_SourcePrefab: {fileID: 100100000, guid: cde502a48cc67fa4abb27eae2ec0b3e3, type: 3}
 --- !u!114 &813776825 stripped
 MonoBehaviour:
@@ -318,6 +334,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &825105530 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2111581302539854191, guid: cde502a48cc67fa4abb27eae2ec0b3e3, type: 3}
+  m_PrefabInstance: {fileID: 797951721}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &825105531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825105530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22cacb22a71baa649a774142ab6b2e99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &849863487
@@ -730,11 +763,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &1879997682 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8864027366443781636, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-  m_PrefabInstance: {fileID: 5087091170806410637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1917602936
 GameObject:
   m_ObjectHideFlags: 0
@@ -1008,6 +1036,10 @@ PrefabInstance:
       propertyPath: m_FontData.m_FontSize
       value: 37
       objectReference: {fileID: 0}
+    - target: {fileID: 8279007658862991323, guid: 943a02bf1baaeee4cad4ef60ea9bc683, type: 3}
+      propertyPath: m_SortingOrder
+      value: 250
+      objectReference: {fileID: 0}
     - target: {fileID: 8279007658863091379, guid: 943a02bf1baaeee4cad4ef60ea9bc683, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.9803771
@@ -1173,7 +1205,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 846553690115565602, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
       propertyPath: m_Name
-      value: NPC_RAY
+      value: Parent
       objectReference: {fileID: 0}
     - target: {fileID: 1110261291402111462, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1215,30 +1247,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4573348026803808605, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: canInteract
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4573348026803808605, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: memorySprite
-      value: 
-      objectReference: {fileID: 21300000, guid: cd9e5badee95b934783efb99010e299e, type: 3}
-    - target: {fileID: 6719621338749817112, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6719621338749817112, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: finishedKey
-      value: RAY_C1_Finished
-      objectReference: {fileID: 0}
-    - target: {fileID: 6719621338749817112, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: checkFinished
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7512576827397468912, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: visualCenter
-      value: 
-      objectReference: {fileID: 1879997682}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
