@@ -115,13 +115,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _serializedExposedParameters: []
-  _boundGraphSerialization: '{"type":"NodeCanvas.DialogueTrees.DialogueTree","nodes":[{"_position":{"x":374.6667,"y":323.3333},"$type":"NodeCanvas.DialogueTrees.ActionNode","$id":"0"},{"statement":{"_text":"This
-    is a dialogue text"},"_actorName":"actor parameter name","_actorParameterID":"a92801ca-3443-464c-aff7-f51316dd3a29","_position":{"x":308.0,"y":458.6667},"$type":"NodeCanvas.DialogueTrees.StatementNode","$id":"1"},{"_position":{"x":411.0,"y":577.6667},"$type":"NodeCanvas.DialogueTrees.FinishNode","$id":"2"}],"connections":[{"_sourceNode":{"$ref":"0"},"_targetNode":{"$ref":"1"},"$type":"NodeCanvas.DialogueTrees.DTConnection"},{"_sourceNode":{"$ref":"1"},"_targetNode":{"$ref":"2"},"$type":"NodeCanvas.DialogueTrees.DTConnection"}],"canvasGroups":[],"localBlackboard":{"_variables":{}},"derivedData":{"actorParameters":[{"_keyName":"Parent","_id":"a92801ca-3443-464c-aff7-f51316dd3a29","_actorObject":1}],"$type":"NodeCanvas.DialogueTrees.DialogueTree+DerivedSerializationData"}}'
-  _boundGraphObjectReferences:
-  - {fileID: 0}
-  - {fileID: 6740267251693330156}
+  _boundGraphSerialization: 
+  _boundGraphObjectReferences: []
   _boundGraphSource:
-    _version: 3.28
+    _version: 0
     _category: 
     _comments: 
     _translation: {x: 0, y: 0}
@@ -132,7 +129,7 @@ MonoBehaviour:
   _lockBoundGraphPrefabOverrides: 1
   _preInitializeSubGraphs: 0
   _updateMode: 0
-  _graph: {fileID: 0}
+  _graph: {fileID: 11400000, guid: a5f1462323c26984683d89e575fa8449, type: 2}
   _blackboard: {fileID: 8646193456304038129}
 --- !u!114 &8646193456304038129
 MonoBehaviour:
@@ -146,7 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b98a6db0b653f764eac834f85857a9dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlackboard: {fileID: 0}
+  _parentBlackboard: {fileID: 11400000, guid: 1a1720c2bf6e3f14db4ad61fbe709b24, type: 2}
   _serializedBlackboard: '{"_variables":{}}'
   _objectReferences: []
   _serializedVariables: []
@@ -254,12 +251,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: de1f1c4f94ec65e4389bf7b2dd0059d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fc903b3ce387787488deac9ca1c861ec, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.8, y: 10.8}
+  m_Size: {x: 28.94, y: 40.931713}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -291,8 +288,8 @@ Transform:
   m_GameObject: {fileID: 6385867290805071516}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.54, y: -2.53, z: 0}
-  m_LocalScale: {x: 0.18106467, y: 0.18106467, z: 0.18106467}
+  m_LocalPosition: {x: -4.52, y: -2.52, z: 0}
+  m_LocalScale: {x: 0.1673869, y: 0.1673869, z: 0.1673869}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5891154077364920657}
@@ -338,12 +335,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: de1f1c4f94ec65e4389bf7b2dd0059d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fc903b3ce387787488deac9ca1c861ec, type: 3}
   m_Color: {r: 0.99371064, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.8, y: 10.8}
+  m_Size: {x: 28.94, y: 40.931713}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

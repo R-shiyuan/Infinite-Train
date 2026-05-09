@@ -1,95 +1,96 @@
 using UnityEngine;
-using NodeCanvas.DialogueTrees;
 using System.Collections.Generic;
+using System;
 
 public class DialogueBridge : MonoBehaviour
 {
+    public static DialogueBridge Instance { get; private set; }
     private List<DialogueRow> currentPlotRows;
     private int currentIndex = 0;
-    private SubtitlesRequestInfo currentInfo;
-    private bool isWaitingForClick = false;
+    private Action onPlotComplete;
 
-    // 立绘资源存放的基础路径（Assets/Resources/Portraits/）
-    private const string PORTRAIT_PATH = "Portraits/";
+    private void Awake() { Instance = this; }
 
-    void Awake() { DialogueTree.OnSubtitlesRequest += OnSubtitlesRequest; }
-    void OnDestroy() { DialogueTree.OnSubtitlesRequest -= OnSubtitlesRequest; }
-
-    void OnSubtitlesRequest(SubtitlesRequestInfo info)
+    // 供 NodeCanvas 的 PlayCSVPlot 脚本调用
+    public void PlayPlot(string plotID, Action callback)
     {
-        currentInfo = info;
-        string plotID = info.statement.text; // 获取对话树节点里填写的 ID
+        Debug.Log("===== 开始播放剧情 =====");
 
-        // 加载 CSV 数据
-        if (currentPlotRows == null || currentPlotRows.Count == 0 || currentPlotRows[0].plotID != plotID)
+        Debug.Log("请求播放 PlotID: [" + plotID + "]");
+
+        onPlotComplete = callback;
+
+        if (CSVManager.Instance == null)
         {
-            currentPlotRows = CSVManager.Instance.GetPlot(plotID);
-            currentIndex = 0;
+            Debug.LogError("CSVManager.Instance 为空！");
+            return;
         }
 
+        currentPlotRows = CSVManager.Instance.GetPlot(plotID);
+
+        if (currentPlotRows == null)
+        {
+            Debug.LogError("找不到 PlotID: [" + plotID + "]");
+        }
+        else
+        {
+            Debug.Log("成功读取剧情，行数: " + currentPlotRows.Count);
+
+            foreach (var row in currentPlotRows)
+            {
+                Debug.Log("读取到内容: " + row.text);
+            }
+        }
+
+        if (currentPlotRows == null || currentPlotRows.Count == 0)
+        {
+            Debug.LogError("剧情为空，直接结束");
+            onPlotComplete?.Invoke();
+            return;
+        }
+
+        currentIndex = 0;
+
+        Debug.Log("准备显示第一句对白");
+
+        DisplayNextLine();
+    }
+
+    // --- 核心修复：加回 Proceed 方法，解决编译报错 ---
+    public void Proceed()
+    {
         DisplayNextLine();
     }
 
     public void DisplayNextLine()
     {
+        Debug.Log("DisplayNextLine 被调用");
         if (currentPlotRows != null && currentIndex < currentPlotRows.Count)
         {
             DialogueRow row = currentPlotRows[currentIndex];
 
-            if (row.plotID == "END")
+            // 路径：Resources/Portraits/角色名_表情名
+            Sprite portrait = Resources.Load<Sprite>("Portraits/" + row.actorID + "_" + row.express);
+
+            // 转换参数：将 CSV 的 "Left" 字符串转为 UI 需要的 bool
+            bool isLeft = row.pos.ToLower() == "left";
+
+            if (DialogueUIController.Instance != null)
             {
-                FinishDialogue();
-                return;
+                DialogueUIController.Instance.ShowDialogue(row.actorName, row.text, portrait, isLeft);
             }
-
-            // --- 核心逻辑：动态加载立绘 ---
-            // 拼写规则：角色ID_表情名 (例如: Ray_Normal)
-            string spriteName = row.actorID + "_" + row.express;
-            Sprite portraitSprite = Resources.Load<Sprite>(PORTRAIT_PATH + spriteName);
-
-            if (portraitSprite == null)
-            {
-                Debug.LogWarning($"[DialogueBridge] 未找到立绘资源: {PORTRAIT_PATH + spriteName}，请检查 Resources 文件夹。");
-            }
-
-            // 判断位置：CSV 填 "Left" 则在左，否则在右
-            bool isLeft = (row.pos.ToLower() == "left");
-
-            // 更新 UI 展示
-            DialogueUIController.Instance.ShowDialogue(
-                row.actorName,
-                row.content,
-                portraitSprite,
-                isLeft
-            );
 
             currentIndex++;
-            isWaitingForClick = true;
         }
-        else
-        {
-            FinishDialogue();
-        }
+        else { FinishDialogue(); }
     }
 
-    public void Proceed()
+    private void FinishDialogue()
     {
-        if (isWaitingForClick)
-        {
-            isWaitingForClick = false;
-            DisplayNextLine();
-        }
-        else if (currentInfo != null)
-        {
-            FinishDialogue();
-        }
-    }
+        if (DialogueUIController.Instance != null)
+            DialogueUIController.Instance.HideDialogue();
 
-    void FinishDialogue()
-    {
-        DialogueUIController.Instance.HideDialogue();
-        if (currentInfo != null) currentInfo.Continue();
-        currentInfo = null;
-        currentPlotRows = null; // 清空缓存，防止下次对话冲突
+        onPlotComplete?.Invoke();
+        onPlotComplete = null;
     }
 }

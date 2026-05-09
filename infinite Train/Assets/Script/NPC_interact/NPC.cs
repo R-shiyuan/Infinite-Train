@@ -1,6 +1,6 @@
 using UnityEngine;
 using NodeCanvas.DialogueTrees;
-
+using System.Collections;
 public class NPC : MonoBehaviour, Interactable
 {
     [Header("引用")]
@@ -101,10 +101,22 @@ public class NPC : MonoBehaviour, Interactable
             CinemaTransitionManager.Instance.OnCinemaReady -= OnCinemaFinished;
 
         Debug.Log("车窗动画完成，打开对话UI");
+
         if (DialogueUIController.Instance != null)
-            DialogueUIController.Instance.ShowDialogue("NPC名字", "这里是对话内容");
+        {
+            DialogueUIController.Instance.ShowDialogue(
+                "NPC名字",
+                "这里是对话内容"
+            );
+        }
+
         if (dialogueController != null)
-            dialogueController.StartDialogue();
+        {
+            if (!dialogueController.graph.isRunning)
+            {
+                dialogueController.StartDialogue();
+            }
+        }
     }
 
     private void StartDialogue()
@@ -129,7 +141,11 @@ public class NPC : MonoBehaviour, Interactable
                 PlayerController.Instance.SetCanMove(false);
 
             CinemaTransitionManager.Instance.OnCinemaReady += OnCinemaFinished;
-            CinemaTransitionManager.Instance.Play(nearestWindow, memorySprite);
+            CinemaTransitionManager.Instance.Play(
+    nearestWindow,
+    memorySprite,
+    dialogueController
+);
         }
         else
         {
@@ -151,7 +167,19 @@ public class NPC : MonoBehaviour, Interactable
             CinemaTransitionManager.Instance.End();
 
         PresenceController pc = GetComponent<PresenceController>();
+
         if (pc != null)
+        {
+            StartCoroutine(DelayedPresenceCheck(pc));
+        }
+    }
+    private IEnumerator DelayedPresenceCheck(PresenceController pc)
+    {
+        yield return new WaitForSeconds(0.2f);
+
+        if (pc != null)
+        {
             pc.CheckPresence();
+        }
     }
 }

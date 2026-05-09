@@ -1,26 +1,27 @@
+ï»¿using NodeCanvas.DialogueTrees;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class CinemaTransitionManager : MonoBehaviour
 {
     public static CinemaTransitionManager Instance;
 
-    [Header("¶¯»­²ÎÊı")]
+    [Header("åŠ¨ç”»å‚æ•°")]
     public float pushDuration = 1.2f;
     public float finalOrthoSize = 2.5f;
     public Vector3 cameraOffset = new Vector3(0, 0, -2f);
     [Range(0, 1)] public float maskAlpha = 0.8f;
     public AnimationCurve eleganceCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    [Header("Ó«Ä»×îÖÕ³ß´ç£¨ÆÁÄ»¿í¶ÈµÄ±ÈÀı£©")]
+    [Header("è§å¹•æœ€ç»ˆå°ºå¯¸ï¼ˆå±å¹•å®½åº¦çš„æ¯”ä¾‹ï¼‰")]
     [Range(0.3f, 1f)] public float targetScreenWidthRatio = 0.7f;
-    public float targetAspect = 16f / 9f;   // ¿í¸ß±È£¬¿Éµ÷Õû
+    public float targetAspect = 16f / 9f;
 
-    // ÊÂ¼ş£º¶¯»­Íê³É£¬¿ÉÏÔÊ¾¶Ô»°UI
+    // äº‹ä»¶ï¼šåŠ¨ç”»å®Œæˆ
     public System.Action OnCinemaReady;
 
-    // ÄÚ²¿±äÁ¿
+    // å†…éƒ¨å˜é‡
     private Camera mainCamera;
     private CameraFollow cameraFollow;
     private Vector3 originalCamPos;
@@ -31,12 +32,22 @@ public class CinemaTransitionManager : MonoBehaviour
     private Image windowScreen;
     private Transform targetWindow;
     private Sprite memorySprite;
+    private DialogueTreeController cachedDialogue;
     private bool isPlaying = false;
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        // --- ä¿®å¤ç‚¹ 1ï¼šé˜²æ­¢è¯¯æ€æ•´ä¸ªç‰©ä½“ ---
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Debug.LogWarning($"æ£€æµ‹åˆ°é‡å¤çš„è„šæœ¬å®ä¾‹ï¼Œæ­£åœ¨æ¸…ç†è„šæœ¬ç»„ä»¶... æŒ‚è½½ç‰©ä½“ï¼š{gameObject.name}");
+            Destroy(this);
+            return;
+        }
     }
 
     void Start()
@@ -46,21 +57,14 @@ public class CinemaTransitionManager : MonoBehaviour
             cameraFollow = mainCamera.GetComponent<CameraFollow>();
     }
 
-    public void Play(Transform window, Sprite memory)
+    public void Play(Transform window, Sprite memory, DialogueTreeController dc)
     {
-        if (isPlaying)
-        {
-            Debug.LogWarning("¶¯»­ÒÑÔÚ½øĞĞ£¬ºöÂÔĞÂÇëÇó");
-            return;
-        }
-        if (window == null || memory == null)
-        {
-            Debug.LogError("³µ´°»ò»ØÒäÍ¼Îª¿Õ£¬Ö±½Ó´¥·¢¶Ô»°");
-            OnCinemaReady?.Invoke();
-            return;
-        }
+        if (isPlaying) return;
+
         targetWindow = window;
         memorySprite = memory;
+        cachedDialogue = dc;
+
         StartCoroutine(PlayCoroutine());
     }
 
@@ -73,24 +77,20 @@ public class CinemaTransitionManager : MonoBehaviour
     private IEnumerator PlayCoroutine()
     {
         isPlaying = true;
+        Debug.Log("æ’­æ”¾è½¦çª—ç”µå½±æ•ˆæœ...");
 
-        // 1. ¼ÇÂ¼Ô­Ê¼×´Ì¬
         originalCamPos = mainCamera.transform.position;
         originalCamSize = mainCamera.orthographicSize;
         if (cameraFollow != null) cameraFollow.enabled = false;
         if (PlayerController.Instance != null) PlayerController.Instance.SetCanMove(false);
 
-        // 2. ´´½¨ UI ²ã
         CreateMaskCanvas();
         CreateScreenCanvas();
 
-        // 3. ÉèÖÃ»ØÒäÍ¼
         windowScreen.sprite = memorySprite;
         windowScreen.color = new Color(1, 1, 1, 0);
 
-        // 4. ¼ÆËãÆğÊ¼´°¿Ú¾ØĞÎ£¨µ±Ç°Ïà»ú×´Ì¬ÏÂµÄ³µ´°Í¶Ó°£©
         Rect startRect = GetWindowScreenRect(targetWindow);
-        // 5. ¼ÆËãÄ¿±ê¾ØĞÎ£¨ÆÁÄ»ÖĞÑë£¬Ö¸¶¨¿í¸ß±ÈºÍ¿í¶È±ÈÀı£©
         float targetWidth = Screen.width * targetScreenWidthRatio;
         float targetHeight = targetWidth / targetAspect;
         Rect targetRect = new Rect(
@@ -100,7 +100,6 @@ public class CinemaTransitionManager : MonoBehaviour
             targetHeight
         );
 
-        // 6. Ä¿±êÏà»ú²ÎÊı
         Vector3 targetCamPos = targetWindow.position + cameraOffset;
         float targetCamSize = finalOrthoSize;
 
@@ -111,11 +110,9 @@ public class CinemaTransitionManager : MonoBehaviour
             float t = elapsed / pushDuration;
             float smoothT = eleganceCurve.Evaluate(t);
 
-            // ¾µÍ·ÒÆ¶¯
             mainCamera.transform.position = Vector3.Lerp(originalCamPos, targetCamPos, smoothT);
             mainCamera.orthographicSize = Mathf.Lerp(originalCamSize, targetCamSize, smoothT);
 
-            // ÕÚÕÖµ­Èë
             if (fullscreenMask != null)
             {
                 Color c = fullscreenMask.color;
@@ -123,33 +120,34 @@ public class CinemaTransitionManager : MonoBehaviour
                 fullscreenMask.color = c;
             }
 
-            // Ó«Ä»±äĞÎ£ºÎ»ÖÃºÍ´óĞ¡´Ó startRect ²åÖµµ½ targetRect
             float curX = Mathf.Lerp(startRect.x, targetRect.x, smoothT);
             float curY = Mathf.Lerp(startRect.y, targetRect.y, smoothT);
             float curW = Mathf.Lerp(startRect.width, targetRect.width, smoothT);
             float curH = Mathf.Lerp(startRect.height, targetRect.height, smoothT);
             SetWindowScreenRect(new Rect(curX, curY, curW, curH));
 
-            // Ó«Ä»µ­Èë
             if (windowScreen != null)
             {
                 Color c = windowScreen.color;
                 c.a = Mathf.Lerp(0, 1, smoothT);
                 windowScreen.color = c;
             }
-
             yield return null;
         }
 
-        // ×îÖÕ¾«È·µ½Î»
         mainCamera.transform.position = targetCamPos;
         mainCamera.orthographicSize = targetCamSize;
         SetWindowScreenRect(targetRect);
+
         if (fullscreenMask != null) fullscreenMask.color = new Color(0, 0, 0, maskAlpha);
         if (windowScreen != null) windowScreen.color = Color.white;
 
+        // --- ä¿®å¤ç‚¹ 2ï¼šåŠ¨ç”»ç»“æŸï¼Œæ‰‹åŠ¨å”¤é†’å¯¹è¯ ---
+        Debug.Log("è½¦çª—åŠ¨ç”»å®Œæˆï¼Œæ‰“å¼€å¯¹è¯UI");
+
         OnCinemaReady?.Invoke();
     }
+
 
     private IEnumerator ExitCoroutine()
     {
@@ -158,12 +156,6 @@ public class CinemaTransitionManager : MonoBehaviour
         float startCamSize = mainCamera.orthographicSize;
         float startMaskAlpha = fullscreenMask != null ? fullscreenMask.color.a : 0;
         float startScreenAlpha = windowScreen != null ? windowScreen.color.a : 0;
-        Rect startScreenRect = windowScreen != null ? GetWindowScreenRectFromTransform() : new Rect(0, 0, 0, 0);
-        // ÍË³¡Ê±£¬Ó«Ä»ĞèÒª·´Ïò±äĞÎ»Ø³µ´°Í¶Ó°£¨ÆğÊ¼Î»ÖÃÎªµ±Ç°Ó«Ä»¾ØĞÎ£¬Ä¿±êÎªÔ­Ê¼³µ´°Í¶Ó°¾ØĞÎ£¬Ïà»ú»Ö¸´£©
-        // µ«ÎªÁË¼ò»¯£¬ÎÒÃÇ¿ÉÒÔÖ±½Óµ­³öÓ«Ä»ºÍÕÚÕÖ£¬Í¬Ê±Ïà»úºóÍË¡£
-        // ÓÉÓÚ³µ´°Í¶Ó°¾ØĞÎÔÚÏà»úÒÆ¶¯¹ı³ÌÖĞÊÇ±ä»¯µÄ£¬ÎªÁË¼òµ¥£¬ÎÒÃÇ²»×öÓ«Ä»·´Ïò±äĞÎ£¬Ö»µ­³ö¡£
-        // ÈôÏ£Íû¸üÆ½»¬£¬¿ÉÒÔ½«Ó«Ä»Öğ½¥ËõĞ¡²¢ÒÆ»Ø³µ´°Î»ÖÃ£¬µ«»áÔö¼Ó¸´ÔÓ¶È¡£
-        // ´Ë´¦½öµ­³ö + Ïà»ú»Ö¸´¡£
 
         while (elapsed < pushDuration)
         {
@@ -190,11 +182,11 @@ public class CinemaTransitionManager : MonoBehaviour
         }
 
         if (cameraFollow != null) cameraFollow.enabled = true;
+        if (PlayerController.Instance != null) PlayerController.Instance.SetCanMove(true);
         CleanupUI();
         isPlaying = false;
     }
 
-    // ---------- UI ´´½¨ ----------
     private void CreateMaskCanvas()
     {
         if (maskCanvas != null) return;
@@ -202,19 +194,14 @@ public class CinemaTransitionManager : MonoBehaviour
         maskCanvas = go.AddComponent<Canvas>();
         maskCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
         maskCanvas.sortingOrder = 100;
-        RectTransform rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = Vector2.zero;
-        rt.localScale = Vector3.one;
 
         GameObject maskImg = new GameObject("FullscreenMask");
         maskImg.transform.SetParent(go.transform, false);
         fullscreenMask = maskImg.AddComponent<Image>();
         fullscreenMask.color = Color.clear;
         fullscreenMask.raycastTarget = false;
-        rt = fullscreenMask.rectTransform;
+
+        RectTransform rt = fullscreenMask.rectTransform;
         rt.anchorMin = Vector2.zero;
         rt.anchorMax = Vector2.one;
         rt.offsetMin = Vector2.zero;
@@ -227,23 +214,16 @@ public class CinemaTransitionManager : MonoBehaviour
         GameObject go = new GameObject("ScreenCanvas");
         screenCanvas = go.AddComponent<Canvas>();
         screenCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        screenCanvas.sortingOrder = 200;
-        RectTransform rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = Vector2.zero;
-        rt.localScale = Vector3.one;
+        screenCanvas.sortingOrder = 200; // è¿™é‡Œçš„å±‚çº§æ˜¯ 200
 
         GameObject screenImg = new GameObject("WindowScreen");
         screenImg.transform.SetParent(go.transform, false);
         windowScreen = screenImg.AddComponent<Image>();
         windowScreen.raycastTarget = false;
         windowScreen.color = Color.clear;
-        windowScreen.preserveAspect = false;   // À­ÉìÌîÂú
+        windowScreen.preserveAspect = false;
     }
 
-    // ---------- ¾ØĞÎ²Ù×÷ ----------
     private Rect GetWindowScreenRect(Transform window)
     {
         if (window == null) return new Rect(0, 0, 0, 0);
@@ -269,13 +249,6 @@ public class CinemaTransitionManager : MonoBehaviour
             max = Vector2.Max(max, sp);
         }
         return new Rect(min.x, min.y, max.x - min.x, max.y - min.y);
-    }
-
-    private Rect GetWindowScreenRectFromTransform()
-    {
-        if (windowScreen == null) return new Rect(0, 0, 0, 0);
-        RectTransform rt = windowScreen.rectTransform;
-        return new Rect(rt.anchoredPosition.x, rt.anchoredPosition.y, rt.sizeDelta.x, rt.sizeDelta.y);
     }
 
     private void SetWindowScreenRect(Rect rect)
