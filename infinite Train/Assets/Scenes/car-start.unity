@@ -269,11 +269,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1110261291402111462, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5
+      value: 6.3
       objectReference: {fileID: 0}
     - target: {fileID: 1110261291402111462, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.42
+      value: 1.83
       objectReference: {fileID: 0}
     - target: {fileID: 1110261291402111462, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
       propertyPath: m_LocalPosition.z
@@ -307,10 +307,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2206080002125478899, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: _portrait
-      value: 
-      objectReference: {fileID: 2800000, guid: fc903b3ce387787488deac9ca1c861ec, type: 3}
     - target: {fileID: 6740267251693330156, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
       propertyPath: _firstActivation
       value: 1
@@ -328,46 +324,6 @@ PrefabInstance:
       propertyPath: _serializedVariables.Array.data[0]._json
       value: '{"_value":"parent_D1_0","_name":"plotID","_id":"880c018c-9b6a-4af5-bcf3-e36dd69b0f9d","$type":"NodeCanvas.Framework.Variable`1[[System.String,
         mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
-      objectReference: {fileID: 0}
-    - target: {fileID: 8864027366443781636, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.050105188
-      objectReference: {fileID: 0}
-    - target: {fileID: 8864027366443781636, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.050105188
-      objectReference: {fileID: 0}
-    - target: {fileID: 8864027366443781636, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.050105188
-      objectReference: {fileID: 0}
-    - target: {fileID: 8864027366443781636, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -4.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 8864027366443781636, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -2.28
-      objectReference: {fileID: 0}
-    - target: {fileID: 8961399120397810245, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.05174674
-      objectReference: {fileID: 0}
-    - target: {fileID: 8961399120397810245, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.05174674
-      objectReference: {fileID: 0}
-    - target: {fileID: 8961399120397810245, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.05174674
-      objectReference: {fileID: 0}
-    - target: {fileID: 8961399120397810245, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -4.6974
-      objectReference: {fileID: 0}
-    - target: {fileID: 8961399120397810245, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -2.291
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
