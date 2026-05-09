@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private bool canMove = true;
 
+    // 新增：动画控制器引用
+    private Animator animator;
+
     private void Awake()
     {
         Instance = this;
@@ -29,6 +32,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();   // 获取动画组件
 
         if (trainFloor != null)
         {
@@ -44,12 +48,20 @@ public class PlayerController : MonoBehaviour
         if (canMove)
         {
             horizontal = Input.GetAxisRaw("Horizontal");
-            if (horizontal > 0) spriteRenderer.flipX = false;
-            else if (horizontal < 0) spriteRenderer.flipX = true;
+            if (horizontal > 0) spriteRenderer.flipX = true;
+            else if (horizontal < 0) spriteRenderer.flipX = false;
+
+            // 根据水平输入绝对值设置动画参数 Speed
+            float speed = Mathf.Abs(horizontal);
+            if (animator != null)
+                animator.SetFloat("Speed", speed);
         }
         else
         {
-            horizontal = 0; // 锁定移动时强制清零输入
+            horizontal = 0;
+            // 禁止移动时强制动画为待机
+            if (animator != null)
+                animator.SetFloat("Speed", 0f);
         }
     }
 
