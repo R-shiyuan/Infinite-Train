@@ -45,8 +45,8 @@ public class GlobalManager : MonoBehaviour
     public void TriggerTestScenario()
     {
         Debug.Log(">>> [TestTool] 按下了 T 键，正在执行状态变更...");
-        SetWorldState("RAY_C1_Finished", true);
-        Debug.Log(">>> [测试] 已强制将 RAY_C1_Finished 设为 True！");
+        SetWorldState("Parent_D1_Finished", true);
+        Debug.Log(">>> [测试] 已强制将 Parent_D1_Finished 设为 True！");
     }
 
     public bool IsStateFinished(string key)

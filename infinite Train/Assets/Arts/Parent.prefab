@@ -11,11 +11,12 @@ GameObject:
   - component: {fileID: 1110261291402111462}
   - component: {fileID: 7974684800136336157}
   - component: {fileID: 4573348026803808605}
-  - component: {fileID: 821956280405773098}
-  - component: {fileID: 6004515473788886324}
-  - component: {fileID: 6719621338749817112}
+  - component: {fileID: 6740267251693330156}
+  - component: {fileID: 8646193456304038129}
+  - component: {fileID: 2206080002125478899}
+  - component: {fileID: 7346602352500216678}
   m_Layer: 0
-  m_Name: NPC_RAY
+  m_Name: Parent
   m_TagString: NPC
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,7 +71,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -4.528779, y: -2.5053825}
+  m_Offset: {x: -5.3290315, y: -3.6127677}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -81,7 +82,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.7496948, y: 1.7540371}
+  m_Size: {x: 2.4445047, y: 3.955392}
   m_EdgeRadius: 0
 --- !u!114 &4573348026803808605
 MonoBehaviour:
@@ -96,12 +97,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outline: {fileID: 4914683694828523364}
-  dialogueController: {fileID: 821956280405773098}
+  dialogueController: {fileID: 6740267251693330156}
   activeDistance: 2
-  canInteract: 0
+  canInteract: 1
   memorySprite: {fileID: 21300000, guid: cd9e5badee95b934783efb99010e299e, type: 3}
   visualCenter: {fileID: 8864027366443781636}
---- !u!114 &821956280405773098
+--- !u!114 &6740267251693330156
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114,11 +115,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _serializedExposedParameters: []
-  _boundGraphSerialization: '{"type":"NodeCanvas.DialogueTrees.DialogueTree","nodes":[],"connections":[],"canvasGroups":[],"localBlackboard":{"_variables":{}},"derivedData":{"actorParameters":[{"_keyName":"actor
-    parameter name"}],"$type":"NodeCanvas.DialogueTrees.DialogueTree+DerivedSerializationData"}}'
+  _boundGraphSerialization: 
   _boundGraphObjectReferences: []
   _boundGraphSource:
-    _version: 3.28
+    _version: 0
     _category: 
     _comments: 
     _translation: {x: 0, y: 0}
@@ -129,9 +129,9 @@ MonoBehaviour:
   _lockBoundGraphPrefabOverrides: 1
   _preInitializeSubGraphs: 0
   _updateMode: 0
-  _graph: {fileID: 0}
-  _blackboard: {fileID: 6004515473788886324}
---- !u!114 &6004515473788886324
+  _graph: {fileID: 11400000, guid: a5f1462323c26984683d89e575fa8449, type: 2}
+  _blackboard: {fileID: 8646193456304038129}
+--- !u!114 &8646193456304038129
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -143,11 +143,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b98a6db0b653f764eac834f85857a9dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlackboard: {fileID: 0}
+  _parentBlackboard: {fileID: 11400000, guid: 1a1720c2bf6e3f14db4ad61fbe709b24, type: 2}
   _serializedBlackboard: '{"_variables":{}}'
   _objectReferences: []
   _serializedVariables: []
---- !u!114 &6719621338749817112
+--- !u!114 &2206080002125478899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846553690115565602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d71fb7c52372e244baf2e69a9d0d116, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _name: Parent
+  _portrait: {fileID: 2800000, guid: 00980fe8a0fa10f4882c186c40946348, type: 3}
+  _dialogueColor: {r: 1, g: 1, b: 1, a: 1}
+  _dialogueOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &7346602352500216678
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -159,8 +175,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cab6a15cf872ad488a59a42221a746e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectID: Ray_Actor
-  finishedKey: RAY_C1_Finished
+  objectID: Parent_Actor
+  finishedKey: Parent_D1_Finished
   unlockedKey: 
 --- !u!1 &1796042844993601831
 GameObject:
@@ -172,9 +188,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8864027366443781636}
   - component: {fileID: 7363439520381924387}
-  - component: {fileID: 7512576827397468912}
   m_Layer: 0
-  m_Name: Ray
+  m_Name: Parent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -189,8 +204,8 @@ Transform:
   m_GameObject: {fileID: 1796042844993601831}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.5353, y: -2.4953, z: 0}
-  m_LocalScale: {x: 0.16142134, y: 0.16142134, z: 0.16142134}
+  m_LocalPosition: {x: -5.2859, y: -3.5568, z: 0}
+  m_LocalScale: {x: 0.109549694, y: 0.109549694, z: 0.109549694}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1110261291402111462}
@@ -236,35 +251,17 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: de1f1c4f94ec65e4389bf7b2dd0059d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 00980fe8a0fa10f4882c186c40946348, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.8, y: 10.8}
+  m_Size: {x: 28.94, y: 40.931713}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7512576827397468912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1796042844993601831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ad64dd2c4e0ec74db43960a4598ee8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outline: {fileID: 0}
-  dialogueController: {fileID: 0}
-  activeDistance: 0.9
-  canInteract: 1
-  memorySprite: {fileID: 0}
-  visualCenter: {fileID: 0}
 --- !u!1 &6385867290805071516
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,8 +288,8 @@ Transform:
   m_GameObject: {fileID: 6385867290805071516}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.54, y: -2.53, z: 0}
-  m_LocalScale: {x: 0.18106467, y: 0.18106467, z: 0.18106467}
+  m_LocalPosition: {x: -5.28, y: -3.58, z: 0}
+  m_LocalScale: {x: 0.11533424, y: 0.111505166, z: 0.120313086}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5891154077364920657}
@@ -338,12 +335,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: de1f1c4f94ec65e4389bf7b2dd0059d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 00980fe8a0fa10f4882c186c40946348, type: 3}
   m_Color: {r: 0.99371064, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.8, y: 10.8}
+  m_Size: {x: 28.94, y: 40.931713}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

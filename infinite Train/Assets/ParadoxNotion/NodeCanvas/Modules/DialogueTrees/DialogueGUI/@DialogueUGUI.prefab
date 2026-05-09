@@ -405,7 +405,7 @@ GameObject:
   - component: {fileID: 22400010}
   - component: {fileID: 22300000}
   - component: {fileID: 11400012}
-  - component: {fileID: 11400010}
+  - component: {fileID: 5844049269928822509}
   - component: {fileID: 6605136810131326037}
   m_Layer: 5
   m_Name: '@DialogueUGUI'
@@ -458,7 +458,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 500
   m_TargetDisplay: 0
 --- !u!114 &11400012
 MonoBehaviour:
@@ -477,7 +477,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &11400010
+--- !u!114 &5844049269928822509
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -489,9 +489,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a2b17e84c4df7d4c890f25c7c265c11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipOnInput: 0
+  skipOnInput: 1
   waitForInput: 1
-  subtitlesGroup: {fileID: 22400002}
+  subtitlesGroup: {fileID: 22400010}
   actorSpeech: {fileID: 11400008}
   actorName: {fileID: 11400006}
   actorPortrait: {fileID: 11400000}
@@ -1026,7 +1026,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0.69803923}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1096,14 +1096,14 @@ Canvas:
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
-  m_OverrideSorting: 0
+  m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 300
   m_TargetDisplay: 0
 --- !u!114 &6831397992266067414
 MonoBehaviour:
