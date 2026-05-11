@@ -137,7 +137,6 @@ public class Lines_2b : MonoBehaviour
     {
         if (finishedLines.Count >= targetConnectionCount)
         {
-            Debug.Log("Í¨¹Ø");
             vicBoard.gameObject.SetActive(true);
         }
     }
