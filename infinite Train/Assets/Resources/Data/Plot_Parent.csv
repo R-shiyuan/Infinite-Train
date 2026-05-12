@@ -2,7 +2,7 @@
 parent_D1_0,1,parent,父母,Normal,Right,Dialogue,【母】：汤好了，{主角}，端桌上去吧
 parent_D1_0,2,parent,父母,Normal,Right,Dialogue,【父】主角？
 parent_D1_0,3,parent,父母,Normal,Right,Dialogue,【母】还没饿？还是又在打游戏？
-parent_D1_0,4,hero,主角,Smile,Left,Dialogue,来啦——
+parent_D1_0,4,hero,主角,normal,Left,Dialogue,来啦——
 parent_D1_0,5,parent,父母,Normal,Right,Dialogue,【母】真是，叫你也不答应，一会又要嫌我唠叨
 parent_D1_0,6,parent,父母,Normal,Right,Dialogue,【父】还在玩那个黑漆漆的游戏吗？就是你老挨揍那个？
 parent_D1_0,7,hero,主角,Normal,Left,Dialogue,也不算老挨揍啦，多玩一会就揍别人啦
