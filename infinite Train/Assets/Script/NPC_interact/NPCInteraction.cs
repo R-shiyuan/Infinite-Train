@@ -13,16 +13,38 @@ public class NPCInteraction : MonoBehaviour, Interactable
         npc = GetComponent<NPC>();
     }
 
-  
     public void OnInteract()
     {
         if (DialogueSequenceController.Instance == null)
+        {
+            Debug.LogError("DialogueSequenceController 不存在");
             return;
+        }
 
-        if (npc == null || dialogueTree == null)
+        if (npc == null)
+        {
+            Debug.LogError("NPC 不存在");
             return;
+        }
 
-       
-        DialogueSequenceController.Instance.StartSequence(npc, dialogueTree);
+        if (dialogueTree == null)
+        {
+            Debug.LogError("DialogueTreeController 未绑定");
+            return;
+        }
+
+        if (!npc.CanInteract())
+        {
+            return;
+        }
+
+        npc.BeginConversation();
+
+        Debug.Log("开始剧情序列");
+
+        DialogueSequenceController.Instance.StartSequence(
+            npc,
+            dialogueTree
+        );
     }
 }

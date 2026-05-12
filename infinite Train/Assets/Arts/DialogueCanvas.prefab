@@ -98,8 +98,6 @@ MonoBehaviour:
   rightCharacter: {fileID: 3957906329918211430}
   speechText: {fileID: 8067424008834224942}
   nameText: {fileID: 8255647737528614845}
-  portraitImage: {fileID: 8972890997158600343}
-  nameBG: {fileID: 2605280376061349508}
   waitInput: {fileID: 9176848959613990404}
   optionsGroup: {fileID: 6921775662324054074}
   optionButtonPrefab: {fileID: 2048301541753146346}
@@ -107,6 +105,7 @@ MonoBehaviour:
     characterDelay: 0.03
     sentenceDelay: 0.3
     commaDelay: 0.08
+  dimAlpha: 0.45
 --- !u!1 &2605280376061349508
 GameObject:
   m_ObjectHideFlags: 0

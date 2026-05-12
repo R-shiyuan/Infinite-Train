@@ -1,13 +1,12 @@
-using NodeCanvas.DialogueTrees;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
-public class VNDialogueUI : MonoBehaviour, IPointerClickHandler
+public class VNDialogueUI : MonoBehaviour
 {
+    public static VNDialogueUI Instance;
+
     [System.Serializable]
     public class SubtitleDelays
     {
@@ -27,11 +26,11 @@ public class VNDialogueUI : MonoBehaviour, IPointerClickHandler
     public Image leftCharacter;
     public Image rightCharacter;
 
-    [Header("对话UI")]
+    [Header("对话 UI")]
     public Text speechText;
     public Text nameText;
-    public Image portraitImage;
-    public GameObject nameBG;
+
+    [Header("等待输入提示")]
     public GameObject waitInput;
 
     [Header("选项")]
@@ -41,54 +40,27 @@ public class VNDialogueUI : MonoBehaviour, IPointerClickHandler
     [Header("打字机")]
     public SubtitleDelays subtitleDelays = new SubtitleDelays();
 
-    private Dictionary<Button, int> cachedButtons;
+    [Header("立绘亮暗")]
+    [Range(0f, 1f)]
+    public float dimAlpha = 0.45f;
 
-    private bool anyKeyDown;
-    private bool isTyping;
+    private bool clicked;
 
-    public void OnPointerClick(PointerEventData eventData)
+    private Coroutine typingCoroutine;
+
+    private void Awake()
     {
-        anyKeyDown = true;
-    }
+        Instance = this;
 
-    void LateUpdate()
-    {
-        anyKeyDown = false;
-    }
-
-    void Awake()
-    {
-        Subscribe();
         HideAll();
     }
 
-    void OnEnable()
+    void Update()
     {
-        UnSubscribe();
-        Subscribe();
-    }
-
-    void OnDisable()
-    {
-        UnSubscribe();
-    }
-
-    void Subscribe()
-    {
-        DialogueTree.OnDialogueStarted += OnDialogueStarted;
-        DialogueTree.OnDialogueFinished += OnDialogueFinished;
-        DialogueTree.OnDialoguePaused += OnDialoguePaused;
-        DialogueTree.OnSubtitlesRequest += OnSubtitlesRequest;
-        DialogueTree.OnMultipleChoiceRequest += OnMultipleChoiceRequest;
-    }
-
-    void UnSubscribe()
-    {
-        DialogueTree.OnDialogueStarted -= OnDialogueStarted;
-        DialogueTree.OnDialogueFinished -= OnDialogueFinished;
-        DialogueTree.OnDialoguePaused -= OnDialoguePaused;
-        DialogueTree.OnSubtitlesRequest -= OnSubtitlesRequest;
-        DialogueTree.OnMultipleChoiceRequest -= OnMultipleChoiceRequest;
+        if (Input.GetMouseButtonDown(0))
+        {
+            clicked = true;
+        }
     }
 
     void HideAll()
@@ -100,93 +72,123 @@ public class VNDialogueUI : MonoBehaviour, IPointerClickHandler
         optionsGroup.gameObject.SetActive(false);
 
         optionButtonPrefab.gameObject.SetActive(false);
+
+        leftCharacter.gameObject.SetActive(false);
+
+        rightCharacter.gameObject.SetActive(false);
     }
 
-    void OnDialogueStarted(DialogueTree dlg)
+    //========================================================
+    // CSV 对话入口
+    //========================================================
+
+    public void ShowDialogue(DialogueRow row)
     {
-        dialoguePanel.SetActive(true);
-    }
-
-    void OnDialoguePaused(DialogueTree dlg)
-    {
-        dialoguePanel.SetActive(false);
-
-        StopAllCoroutines();
-    }
-
-    void OnDialogueFinished(DialogueTree dlg)
-    {
-        dialoguePanel.SetActive(false);
-
-        optionsGroup.gameObject.SetActive(false);
-
-        if (cachedButtons != null)
+        if (typingCoroutine != null)
         {
-            foreach (var btn in cachedButtons.Keys)
+            StopCoroutine(typingCoroutine);
+        }
+
+        typingCoroutine =
+            StartCoroutine(ShowDialogueCoroutine(row));
+    }
+
+    IEnumerator ShowDialogueCoroutine(DialogueRow row)
+    {
+        clicked = false;
+
+        dialoguePanel.SetActive(true);
+
+        //====================================================
+        // 名字
+        //====================================================
+
+        nameText.text = row.actorName;
+
+        //====================================================
+        // 加载立绘
+        //====================================================
+
+        Sprite portrait =
+            Resources.Load<Sprite>(
+                "Portraits/" +
+                row.actorID +
+                "_" +
+                row.express
+            );
+
+        bool isLeft =
+            row.pos.ToLower() == "left";
+
+        //====================================================
+        // 设置立绘
+        //====================================================
+
+        if (portrait != null)
+        {
+            if (isLeft)
             {
-                if (btn != null)
-                    Destroy(btn.gameObject);
+                leftCharacter.gameObject.SetActive(true);
+
+                leftCharacter.sprite = portrait;
+            }
+            else
+            {
+                rightCharacter.gameObject.SetActive(true);
+
+                rightCharacter.sprite = portrait;
             }
         }
 
-        cachedButtons = null;
+        //====================================================
+        // 当前角色高亮
+        //====================================================
 
-        StopAllCoroutines();
+        Color bright = Color.white;
 
-        // 对话结束后关闭电影效果
-        if (CinemaTransitionManager.Instance != null)
+        Color dim =
+            new Color(
+                1f,
+                1f,
+                1f,
+                dimAlpha
+            );
+
+        if (isLeft)
         {
-            CinemaTransitionManager.Instance.End();
-        }
-    }
+            leftCharacter.color = bright;
 
-    //========================================================
-    // 字幕
-    //========================================================
-
-    void OnSubtitlesRequest(SubtitlesRequestInfo info)
-    {
-        StartCoroutine(Internal_Subtitles(info));
-    }
-
-    IEnumerator Internal_Subtitles(SubtitlesRequestInfo info)
-    {
-        isTyping = true;
-
-        dialoguePanel.SetActive(true);
-
-        string fullText = info.statement.text;
-
-        var actor = info.actor;
-
-        // 名字
-        nameText.text = actor.name;
-
-        // 颜色
-        speechText.color = actor.dialogueColor;
-
-        // 肖像
-        if (actor.portraitSprite != null)
-        {
-            portraitImage.gameObject.SetActive(true);
-            portraitImage.sprite = actor.portraitSprite;
+            if (rightCharacter.gameObject.activeSelf)
+            {
+                rightCharacter.color = dim;
+            }
         }
         else
         {
-            portraitImage.gameObject.SetActive(false);
+            rightCharacter.color = bright;
+
+            if (leftCharacter.gameObject.activeSelf)
+            {
+                leftCharacter.color = dim;
+            }
         }
 
-        // 清空
+        //====================================================
+        // 打字机
+        //====================================================
+
         speechText.text = "";
 
-        // 打字机
+        string fullText = row.text;
+
         string current = "";
 
         for (int i = 0; i < fullText.Length; i++)
         {
-            if (skipOnInput && anyKeyDown)
+            if (skipOnInput && clicked)
             {
                 speechText.text = fullText;
+
                 break;
             }
 
@@ -196,25 +198,40 @@ public class VNDialogueUI : MonoBehaviour, IPointerClickHandler
 
             speechText.text = current;
 
-            float delay = subtitleDelays.characterDelay;
+            float delay =
+                subtitleDelays.characterDelay;
 
             if (c == ',' || c == '，')
+            {
                 delay = subtitleDelays.commaDelay;
+            }
 
-            if (c == '.' || c == '。' || c == '!' || c == '?' || c == '！' || c == '？')
+            if (
+                c == '.' ||
+                c == '。' ||
+                c == '!' ||
+                c == '?' ||
+                c == '！' ||
+                c == '？'
+            )
+            {
                 delay = subtitleDelays.sentenceDelay;
+            }
 
             yield return new WaitForSeconds(delay);
         }
 
-        isTyping = false;
-
+        //====================================================
         // 等待点击继续
+        //====================================================
+
+        clicked = false;
+
         if (waitForInput)
         {
             waitInput.SetActive(true);
 
-            while (!anyKeyDown)
+            while (!clicked)
             {
                 yield return null;
             }
@@ -222,59 +239,27 @@ public class VNDialogueUI : MonoBehaviour, IPointerClickHandler
             waitInput.SetActive(false);
         }
 
-        info.Continue();
+        clicked = false;
+
+        DialogueBridge.Instance.Next();
     }
 
     //========================================================
-    // 选项
+    // 隐藏
     //========================================================
 
-    void OnMultipleChoiceRequest(MultipleChoiceRequestInfo info)
+    public void HideDialogue()
     {
-        optionsGroup.gameObject.SetActive(true);
+        dialoguePanel.SetActive(false);
 
-        cachedButtons = new Dictionary<Button, int>();
+        waitInput.SetActive(false);
 
-        foreach (Transform child in optionsGroup)
-        {
-            if (child != optionButtonPrefab.transform)
-            {
-                Destroy(child.gameObject);
-            }
-        }
+        speechText.text = "";
 
-        int i = 0;
+        nameText.text = "";
 
-        foreach (var pair in info.options)
-        {
-            Button btn = Instantiate(optionButtonPrefab, optionsGroup);
+        leftCharacter.gameObject.SetActive(false);
 
-            btn.gameObject.SetActive(true);
-
-            btn.GetComponentInChildren<Text>().text = pair.Key.text;
-
-            cachedButtons.Add(btn, pair.Value);
-
-            btn.onClick.AddListener(() =>
-            {
-                FinalizeChoice(info, cachedButtons[btn]);
-            });
-
-            i++;
-        }
-    }
-
-    void FinalizeChoice(MultipleChoiceRequestInfo info, int index)
-    {
-        optionsGroup.gameObject.SetActive(false);
-
-        foreach (var btn in cachedButtons.Keys)
-        {
-            Destroy(btn.gameObject);
-        }
-
-        cachedButtons.Clear();
-
-        info.SelectOption(index);
+        rightCharacter.gameObject.SetActive(false);
     }
 }

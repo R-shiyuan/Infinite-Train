@@ -1,11 +1,10 @@
 using UnityEngine;
-using NodeCanvas.DialogueTrees;
 using System.Collections;
-public class NPC : MonoBehaviour, Interactable
+
+public class NPC : MonoBehaviour
 {
     [Header("引用")]
     public OutlineHandler outline;
-    public DialogueTreeController dialogueController;
 
     [Header("交互设置")]
     public float activeDistance = 2.5f;
@@ -13,15 +12,13 @@ public class NPC : MonoBehaviour, Interactable
     [Header("剧情控制")]
     public bool canInteract = true;
 
-    [Header("车窗电影")]
-    public Sprite memorySprite;
-
     [Header("视觉中心（用于距离计算，不指定则自动使用 SpriteRenderer/Collider 中心）")]
     public Transform visualCenter;
 
     private bool isPlayerNearby = false;
     private bool isMouseOver = false;
     private bool isTalking = false;
+
     private Collider2D npcCollider;
 
     void Awake()
@@ -31,126 +28,74 @@ public class NPC : MonoBehaviour, Interactable
 
     void Update()
     {
-        if (PlayerController.Instance == null || npcCollider == null) return;
-
-        Collider2D playerCollider = PlayerController.Instance.GetComponent<Collider2D>();
-        if (playerCollider != null)
-        {
-            float currentDist = npcCollider.Distance(playerCollider).distance;
-            isPlayerNearby = (currentDist <= activeDistance);
-        }
+        CheckPlayerDistance();
 
         RefreshHighlightState();
     }
 
-    private void OnMouseEnter() { isMouseOver = true; }
-    private void OnMouseExit() { isMouseOver = false; }
+    void CheckPlayerDistance()
+    {
+        if (PlayerController.Instance == null)
+            return;
+
+        if (npcCollider == null)
+            return;
+
+        Collider2D playerCollider =
+            PlayerController.Instance.GetComponent<Collider2D>();
+
+        if (playerCollider == null)
+            return;
+
+        float currentDist =
+            npcCollider.Distance(playerCollider).distance;
+
+        isPlayerNearby = currentDist <= activeDistance;
+    }
+
+    private void OnMouseEnter()
+    {
+        isMouseOver = true;
+    }
+
+    private void OnMouseExit()
+    {
+        isMouseOver = false;
+    }
 
     private void RefreshHighlightState()
     {
-        if (outline != null)
-        {
-            bool shouldShow = isTalking || (isPlayerNearby && isMouseOver && canInteract);
-            if (outline.gameObject.activeSelf != shouldShow)
-                outline.ShowOutline(shouldShow);
-        }
+        if (outline == null)
+            return;
+
+        bool shouldShow =
+            isTalking ||
+            (isPlayerNearby && isMouseOver && canInteract);
+
+        outline.ShowOutline(shouldShow);
     }
 
-    private Vector3 GetVisualCenterPosition()
+    //========================================================
+    // 对外接口
+    //========================================================
+
+    public bool CanInteract()
     {
-        if (visualCenter != null)
-            return visualCenter.position;
-
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-            return sr.bounds.center;
-
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null)
-            return col.bounds.center;
-
-        return transform.position;
+        return
+            canInteract &&
+            isPlayerNearby &&
+            !isTalking;
     }
 
-    private Transform FindNearestWindow()
+    public void BeginConversation()
     {
-        GameObject[] windows = GameObject.FindGameObjectsWithTag("Window");
-        Transform nearest = null;
-        float minDistSqr = float.MaxValue;
-        Vector3 visualPos = GetVisualCenterPosition();
+        isTalking = true;
 
-        foreach (var win in windows)
+        RefreshHighlightState();
+
+        if (PlayerController.Instance != null)
         {
-            BoxCollider2D winCol = win.GetComponent<BoxCollider2D>();
-            if (winCol == null) continue;
-
-            Vector3 closestPoint = winCol.bounds.ClosestPoint(visualPos);
-            float d2 = (closestPoint - visualPos).sqrMagnitude;
-            if (d2 < minDistSqr)
-            {
-                minDistSqr = d2;
-                nearest = win.transform;
-            }
-        }
-        return nearest;
-    }
-
-    private void OnCinemaFinished()
-    {
-        if (CinemaTransitionManager.Instance != null)
-            CinemaTransitionManager.Instance.OnCinemaReady -= OnCinemaFinished;
-
-        Debug.Log("车窗动画完成，打开对话UI");
-
-        if (DialogueUIController.Instance != null)
-        {
-            DialogueUIController.Instance.ShowDialogue(
-                "NPC名字",
-                "这里是对话内容"
-            );
-        }
-
-        if (dialogueController != null)
-        {
-            if (!dialogueController.graph.isRunning)
-            {
-                dialogueController.StartDialogue();
-            }
-        }
-    }
-
-    private void StartDialogue()
-    {
-        if (DialogueUIController.Instance != null)
-            DialogueUIController.Instance.ShowDialogue("NPC名字", "这里是对话内容");
-        if (dialogueController != null)
-            dialogueController.StartDialogue();
-    }
-
-    public void OnInteract()
-    {
-        if (!isPlayerNearby || !canInteract || isTalking) return;
-
-        Transform nearestWindow = FindNearestWindow();
-
-        if (CinemaTransitionManager.Instance != null && nearestWindow != null && memorySprite != null)
-        {
-            Debug.Log("播放车窗电影效果");
-            isTalking = true;
-            if (PlayerController.Instance != null)
-                PlayerController.Instance.SetCanMove(false);
-
-            CinemaTransitionManager.Instance.OnCinemaReady += OnCinemaFinished;
-            CinemaTransitionManager.Instance.Play(
-    nearestWindow,
-    memorySprite,
-    dialogueController
-);
-        }
-        else
-        {
-            Debug.Log("直接打开对话（无车窗或回忆图）");
-            StartDialogue();
+            PlayerController.Instance.SetCanMove(false);
         }
     }
 
@@ -158,22 +103,34 @@ public class NPC : MonoBehaviour, Interactable
     {
         isTalking = false;
 
-        if (outline != null) outline.ShowOutline(false);
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetCanMove(true);
-        if (DialogueUIController.Instance != null)
-            DialogueUIController.Instance.HideDialogue();
-        if (CinemaTransitionManager.Instance != null)
-            CinemaTransitionManager.Instance.End();
+        RefreshHighlightState();
 
-        PresenceController pc = GetComponent<PresenceController>();
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.SetCanMove(true);
+        }
+
+        // 关闭电影效果
+        if (CinemaTransitionManager.Instance != null)
+        {
+            CinemaTransitionManager.Instance.End();
+        }
+
+        // Presence 刷新
+        PresenceController pc =
+            GetComponent<PresenceController>();
 
         if (pc != null)
         {
-            StartCoroutine(DelayedPresenceCheck(pc));
+            StartCoroutine(
+                DelayedPresenceCheck(pc)
+            );
         }
     }
-    private IEnumerator DelayedPresenceCheck(PresenceController pc)
+
+    IEnumerator DelayedPresenceCheck(
+        PresenceController pc
+    )
     {
         yield return new WaitForSeconds(0.2f);
 
@@ -181,5 +138,26 @@ public class NPC : MonoBehaviour, Interactable
         {
             pc.CheckPresence();
         }
+    }
+
+
+    public Vector3 GetVisualCenterPosition()
+    {
+        if (visualCenter != null)
+            return visualCenter.position;
+
+        SpriteRenderer sr =
+            GetComponent<SpriteRenderer>();
+
+        if (sr != null)
+            return sr.bounds.center;
+
+        Collider2D col =
+            GetComponent<Collider2D>();
+
+        if (col != null)
+            return col.bounds.center;
+
+        return transform.position;
     }
 }
