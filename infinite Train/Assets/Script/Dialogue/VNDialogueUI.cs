@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,43 +15,41 @@ public class VNDialogueUI : MonoBehaviour
         public float commaDelay = 0.08f;
     }
 
-    [Header("ÊäÈë")]
+    [Header("è¾“å…¥")]
     public bool skipOnInput = true;
     public bool waitForInput = true;
 
-    [Header("Ö÷Ãæ°å")]
+    [Header("ä¸»é¢æ¿")]
     public GameObject dialoguePanel;
 
-    [Header("½ÇÉ«Á¢»æ")]
+    [Header("è§’è‰²ç«‹ç»˜")]
     public Image leftCharacter;
     public Image rightCharacter;
 
-    [Header("¶Ô»° UI")]
+    [Header("å¯¹è¯ UI")]
     public Text speechText;
     public Text nameText;
 
-    [Header("µÈ´ıÊäÈëÌáÊ¾")]
+    [Header("ç­‰å¾…è¾“å…¥æç¤º")]
     public GameObject waitInput;
 
-    [Header("Ñ¡Ïî")]
+    [Header("é€‰é¡¹")]
     public RectTransform optionsGroup;
     public Button optionButtonPrefab;
 
-    [Header("´ò×Ö»ú")]
+    [Header("æ‰“å­—æœº")]
     public SubtitleDelays subtitleDelays = new SubtitleDelays();
 
-    [Header("Á¢»æÁÁ°µ")]
+    [Header("ç«‹ç»˜äº®æš—")]
     [Range(0f, 1f)]
     public float dimAlpha = 0.45f;
 
     private bool clicked;
-
     private Coroutine typingCoroutine;
 
     private void Awake()
     {
         Instance = this;
-
         HideAll();
     }
 
@@ -66,21 +64,14 @@ public class VNDialogueUI : MonoBehaviour
     void HideAll()
     {
         dialoguePanel.SetActive(false);
-
         waitInput.SetActive(false);
-
         optionsGroup.gameObject.SetActive(false);
-
         optionButtonPrefab.gameObject.SetActive(false);
 
         leftCharacter.gameObject.SetActive(false);
-
         rightCharacter.gameObject.SetActive(false);
     }
 
-    //========================================================
-    // CSV ¶Ô»°Èë¿Ú
-    //========================================================
 
     public void ShowDialogue(DialogueRow row)
     {
@@ -100,13 +91,13 @@ public class VNDialogueUI : MonoBehaviour
         dialoguePanel.SetActive(true);
 
         //====================================================
-        // Ãû×Ö
+        // åå­—
         //====================================================
 
         nameText.text = row.actorName;
 
         //====================================================
-        // ¼ÓÔØÁ¢»æ
+        // åŠ è½½ç«‹ç»˜
         //====================================================
 
         Sprite portrait =
@@ -121,7 +112,7 @@ public class VNDialogueUI : MonoBehaviour
             row.pos.ToLower() == "left";
 
         //====================================================
-        // ÉèÖÃÁ¢»æ
+        // è®¾ç½®ç«‹ç»˜
         //====================================================
 
         if (portrait != null)
@@ -129,58 +120,60 @@ public class VNDialogueUI : MonoBehaviour
             if (isLeft)
             {
                 leftCharacter.gameObject.SetActive(true);
-
                 leftCharacter.sprite = portrait;
             }
             else
             {
                 rightCharacter.gameObject.SetActive(true);
-
                 rightCharacter.sprite = portrait;
             }
         }
 
-        //====================================================
-        // µ±Ç°½ÇÉ«¸ßÁÁ
-        //====================================================
+        bool isMonologue =
+            row.state != null &&
+            row.state.ToLower() == "monologue";
 
         Color bright = Color.white;
+        Color dim = new Color(1f, 1f, 1f, dimAlpha);
 
-        Color dim =
-            new Color(
-                1f,
-                1f,
-                1f,
-                dimAlpha
-            );
-
-        if (isLeft)
+        if (isMonologue)
         {
-            leftCharacter.color = bright;
+            // ğŸ‘‰ ä¸¤è¾¹å…¨éƒ¨å˜æš—
+            if (leftCharacter.gameObject.activeSelf)
+                leftCharacter.color = dim;
 
             if (rightCharacter.gameObject.activeSelf)
-            {
                 rightCharacter.color = dim;
-            }
         }
         else
         {
-            rightCharacter.color = bright;
+            //================================================
+            // æ­£å¸¸å¯¹è¯é€»è¾‘
+            //================================================
 
-            if (leftCharacter.gameObject.activeSelf)
+            if (isLeft)
             {
-                leftCharacter.color = dim;
+                leftCharacter.color = bright;
+
+                if (rightCharacter.gameObject.activeSelf)
+                    rightCharacter.color = dim;
+            }
+            else
+            {
+                rightCharacter.color = bright;
+
+                if (leftCharacter.gameObject.activeSelf)
+                    leftCharacter.color = dim;
             }
         }
 
         //====================================================
-        // ´ò×Ö»ú
+        // æ‰“å­—æœº
         //====================================================
 
         speechText.text = "";
 
         string fullText = row.text;
-
         string current = "";
 
         for (int i = 0; i < fullText.Length; i++)
@@ -188,41 +181,29 @@ public class VNDialogueUI : MonoBehaviour
             if (skipOnInput && clicked)
             {
                 speechText.text = fullText;
-
                 break;
             }
 
             char c = fullText[i];
-
             current += c;
 
             speechText.text = current;
 
-            float delay =
-                subtitleDelays.characterDelay;
+            float delay = subtitleDelays.characterDelay;
 
-            if (c == ',' || c == '£¬')
-            {
+            if (c == ',' || c == 'ï¼Œ')
                 delay = subtitleDelays.commaDelay;
-            }
 
-            if (
-                c == '.' ||
-                c == '¡£' ||
-                c == '!' ||
-                c == '?' ||
-                c == '£¡' ||
-                c == '£¿'
-            )
-            {
+            if (c == '.' || c == 'ã€‚' ||
+                c == '!' || c == '?' ||
+                c == 'ï¼' || c == 'ï¼Ÿ')
                 delay = subtitleDelays.sentenceDelay;
-            }
 
             yield return new WaitForSeconds(delay);
         }
 
         //====================================================
-        // µÈ´ıµã»÷¼ÌĞø
+        // ç­‰å¾…ç‚¹å‡»ç»§ç»­
         //====================================================
 
         clicked = false;
@@ -232,9 +213,7 @@ public class VNDialogueUI : MonoBehaviour
             waitInput.SetActive(true);
 
             while (!clicked)
-            {
                 yield return null;
-            }
 
             waitInput.SetActive(false);
         }
@@ -245,21 +224,18 @@ public class VNDialogueUI : MonoBehaviour
     }
 
     //========================================================
-    // Òş²Ø
+    // éšè—
     //========================================================
 
     public void HideDialogue()
     {
         dialoguePanel.SetActive(false);
-
         waitInput.SetActive(false);
 
         speechText.text = "";
-
         nameText.text = "";
 
         leftCharacter.gameObject.SetActive(false);
-
         rightCharacter.gameObject.SetActive(false);
     }
 }
