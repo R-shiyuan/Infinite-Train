@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 4573348026803808605}
   - component: {fileID: 6740267251693330156}
   - component: {fileID: 8646193456304038129}
-  - component: {fileID: 2206080002125478899}
   - component: {fileID: 7346602352500216678}
+  - component: {fileID: 8428198380402894657}
   m_Layer: 0
   m_Name: Parent
   m_TagString: NPC
@@ -123,7 +123,7 @@ MonoBehaviour:
     _comments: 
     _translation: {x: 0, y: 0}
     _zoomFactor: 1
-  _firstActivation: 0
+  _firstActivation: 1
   _enableAction: 1
   _disableAction: 2
   _lockBoundGraphPrefabOverrides: 1
@@ -147,22 +147,6 @@ MonoBehaviour:
   _serializedBlackboard: '{"_variables":{}}'
   _objectReferences: []
   _serializedVariables: []
---- !u!114 &2206080002125478899
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 846553690115565602}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d71fb7c52372e244baf2e69a9d0d116, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _name: Parent
-  _portrait: {fileID: 2800000, guid: 00980fe8a0fa10f4882c186c40946348, type: 3}
-  _dialogueColor: {r: 1, g: 1, b: 1, a: 1}
-  _dialogueOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &7346602352500216678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +162,19 @@ MonoBehaviour:
   objectID: Parent_Actor
   finishedKey: Parent_D1_Finished
   unlockedKey: 
+--- !u!114 &8428198380402894657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846553690115565602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9892c5881f2b5f040b9e4088fe8bf85f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueTree: {fileID: 6740267251693330156}
 --- !u!1 &1796042844993601831
 GameObject:
   m_ObjectHideFlags: 0
