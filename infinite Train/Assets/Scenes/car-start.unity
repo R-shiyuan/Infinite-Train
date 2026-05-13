@@ -649,6 +649,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1724568690}
     m_Modifications:
     - target: {fileID: 2283426347044238369, guid: 66bb88d747068c34a9bcdeab22900c2f, type: 3}
+      propertyPath: maskAlpha
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2283426347044238369, guid: 66bb88d747068c34a9bcdeab22900c2f, type: 3}
       propertyPath: targetAspect
       value: 2.5
       objectReference: {fileID: 0}
@@ -1893,7 +1897,7 @@ PrefabInstance:
       objectReference: {fileID: 3963750088772018340}
     - target: {fileID: 6941097808590409337, guid: e35c218011744164fb2db5f530e5de17, type: 3}
       propertyPath: isLeftDoor
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
