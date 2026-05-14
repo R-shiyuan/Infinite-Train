@@ -10,90 +10,71 @@ public class DialogueSequenceController : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     public void StartSequence(NPC npc, DialogueTreeController dialogueTree)
     {
-        if (npc == null || dialogueTree == null)
-            return;
+        if (npc == null || dialogueTree == null) return;
 
         currentNPC = npc;
         currentDialogue = dialogueTree;
 
         Transform window = FindNearestWindow(npc);
-
         Sprite memory = null;
 
         if (MemoryDatabase.Instance != null)
-        {
             memory = MemoryDatabase.Instance.GetMemory(npc);
-        }
 
-        // 没有电影效果
         if (window == null || memory == null)
         {
             StartDialogue();
             return;
         }
 
-        // 防止重复注册
         CinemaTransitionManager.Instance.OnCinemaReady -= OnCinemaFinished;
         CinemaTransitionManager.Instance.OnCinemaReady += OnCinemaFinished;
-
-        CinemaTransitionManager.Instance.Play(
-            window,
-            memory,
-            dialogueTree
-        );
+        CinemaTransitionManager.Instance.Play(window, memory, dialogueTree);
     }
 
     void OnCinemaFinished()
     {
         CinemaTransitionManager.Instance.OnCinemaReady -= OnCinemaFinished;
-
         StartDialogue();
     }
 
     void StartDialogue()
     {
-        if (currentDialogue == null)
-            return;
-
-        if (!currentDialogue.graph.isRunning)
-        {
+        if (currentDialogue != null && !currentDialogue.graph.isRunning)
             currentDialogue.StartDialogue();
-        }
     }
 
+    // ========== 修改这里 ==========
     private Transform FindNearestWindow(NPC npc)
     {
         GameObject[] windows = GameObject.FindGameObjectsWithTag("Window");
-
         Transform nearest = null;
+        float minDistSqr = float.MaxValue;
 
-        float min = float.MaxValue;
+        // 使用 NPC 的视觉中心位置（你先前已实现 GetVisualCenterPosition）
+        Vector3 visualPos = npc.GetVisualCenterPosition();
 
-        Vector3 pos = npc.transform.position;
-
-        foreach (var w in windows)
+        foreach (GameObject win in windows)
         {
-            float d = (w.transform.position - pos).sqrMagnitude;
+            BoxCollider2D col = win.GetComponent<BoxCollider2D>();
+            if (col == null) continue;   // 必须有 Collider 才能计算边界
 
-            if (d < min)
+            // 计算视觉中心到车窗碰撞体表面的最近距离
+            Vector3 closestPoint = col.bounds.ClosestPoint(visualPos);
+            float d2 = (closestPoint - visualPos).sqrMagnitude;
+
+            if (d2 < minDistSqr)
             {
-                min = d;
-                nearest = w.transform;
+                minDistSqr = d2;
+                nearest = win.transform;
             }
         }
-
         return nearest;
     }
 }
