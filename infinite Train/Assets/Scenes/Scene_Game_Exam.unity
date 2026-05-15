@@ -3740,7 +3740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5af3f5289bdea944195cb1194b2a89e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: miniGame_2a
+  nextSceneName: Scene_Game_CleanPic
   board: {fileID: 1338119992}
 --- !u!4 &665410003
 Transform:

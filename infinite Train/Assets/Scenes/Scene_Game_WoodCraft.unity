@@ -2584,7 +2584,7 @@ MonoBehaviour:
   - {fileID: 2927136}
   - {fileID: 205483939}
   vicBoard: {fileID: 1964579679}
-  nextSceneName: miniGame_3b
+  nextSceneName: Scene_Game_Sugar
 --- !u!1 &1891781276
 GameObject:
   m_ObjectHideFlags: 0

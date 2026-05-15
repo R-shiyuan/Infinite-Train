@@ -489,7 +489,7 @@ MonoBehaviour:
   arrow: {fileID: 1253118344}
   arrowDown: {fileID: 21300000, guid: 479ae4ae842538d43a4b02934b33f025, type: 3}
   isShown: 0
-  nextSceneName: miniGame_3a
+  nextSceneName: Scene_Game_WoodCraft
 --- !u!212 &578624570
 SpriteRenderer:
   m_ObjectHideFlags: 0

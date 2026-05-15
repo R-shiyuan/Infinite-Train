@@ -1100,7 +1100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f24afbfc6ddb7d4eb19f47795805823, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: miniGame_1b
+  nextSceneName: Scene_Game_WashClothes
 --- !u!114 &853561461
 MonoBehaviour:
   m_ObjectHideFlags: 0
