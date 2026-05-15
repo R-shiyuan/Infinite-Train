@@ -11,10 +11,15 @@ public class MiniGameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-    }
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
     public void Play(string gameID, System.Action onComplete)
     {
         currentGameID = gameID;

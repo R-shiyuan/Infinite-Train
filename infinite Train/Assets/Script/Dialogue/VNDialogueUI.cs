@@ -42,18 +42,26 @@ public class VNDialogueUI : MonoBehaviour
     private bool clicked;
     private Coroutine typingCoroutine;
 
-    // =====================================================
-    // 🔥 新增：立绘缓存（关键修复）
-    // =====================================================
     private Sprite lastLeftSprite;
     private Sprite lastRightSprite;
 
-    private string lastLeftActor;
-    private string lastRightActor;
-
+    // =====================================================
+    // ✅ 核心修复：单例 + 防场景重复初始化
+    // =====================================================
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+
+        
+        DontDestroyOnLoad(gameObject);
+
+        
         HideAll();
     }
 
@@ -67,11 +75,17 @@ public class VNDialogueUI : MonoBehaviour
 
     void HideAll()
     {
-        dialoguePanel.SetActive(false);
-        waitInput.SetActive(false);
+        if (dialoguePanel != null)
+            dialoguePanel.SetActive(false);
 
-        leftCharacter.gameObject.SetActive(false);
-        rightCharacter.gameObject.SetActive(false);
+        if (waitInput != null)
+            waitInput.SetActive(false);
+
+        if (leftCharacter != null)
+            leftCharacter.gameObject.SetActive(false);
+
+        if (rightCharacter != null)
+            rightCharacter.gameObject.SetActive(false);
     }
 
     public void ShowDialogue(DialogueRow row)
@@ -85,8 +99,8 @@ public class VNDialogueUI : MonoBehaviour
     IEnumerator ShowDialogueCoroutine(DialogueRow row)
     {
         clicked = false;
-        dialoguePanel.SetActive(true);
 
+        dialoguePanel.SetActive(true);
         nameText.text = row.actorName;
 
         bool isMonologue =
@@ -95,18 +109,12 @@ public class VNDialogueUI : MonoBehaviour
 
         bool isLeft = row.pos.ToLower() == "left";
 
-        // =====================================================
-        // 1. 加载立绘（只有非 monologue 才刷新）
-        // =====================================================
         Sprite portrait = null;
 
         if (!isMonologue)
         {
             portrait = Resources.Load<Sprite>(
-                "Portraits/" +
-                row.actorID +
-                "_" +
-                row.express
+                "Portraits/" + row.actorID + "_" + row.express
             );
 
             if (portrait != null)
@@ -115,26 +123,18 @@ public class VNDialogueUI : MonoBehaviour
                 {
                     leftCharacter.gameObject.SetActive(true);
                     leftCharacter.sprite = portrait;
-
                     lastLeftSprite = portrait;
-                    lastLeftActor = row.actorID;
                 }
                 else
                 {
                     rightCharacter.gameObject.SetActive(true);
                     rightCharacter.sprite = portrait;
-
                     lastRightSprite = portrait;
-                    lastRightActor = row.actorID;
                 }
             }
         }
         else
         {
-            // =====================================================
-            // 🔥 monologue：锁定上一帧立绘
-            // =====================================================
-
             if (lastLeftSprite != null)
             {
                 leftCharacter.gameObject.SetActive(true);
@@ -148,15 +148,11 @@ public class VNDialogueUI : MonoBehaviour
             }
         }
 
-        // =====================================================
-        // 2. 立绘亮暗控制（修复关键）
-        // =====================================================
         Color bright = Color.white;
         Color dim = new Color(1f, 1f, 1f, dimAlpha);
 
         if (isMonologue)
         {
-            // 🔥 内心独白：全部变暗，但不改变结构
             leftCharacter.color = dim;
             rightCharacter.color = dim;
         }
@@ -174,9 +170,6 @@ public class VNDialogueUI : MonoBehaviour
             }
         }
 
-        // =====================================================
-        // 3. 打字机
-        // =====================================================
         speechText.text = "";
         string fullText = row.text;
         string current = "";
@@ -191,7 +184,6 @@ public class VNDialogueUI : MonoBehaviour
 
             char c = fullText[i];
             current += c;
-
             speechText.text = current;
 
             float delay = subtitleDelays.characterDelay;
@@ -207,9 +199,6 @@ public class VNDialogueUI : MonoBehaviour
             yield return new WaitForSeconds(delay);
         }
 
-        // =====================================================
-        // 4. 等待输入
-        // =====================================================
         clicked = false;
 
         if (waitForInput)
@@ -221,8 +210,6 @@ public class VNDialogueUI : MonoBehaviour
 
             waitInput.SetActive(false);
         }
-
-        clicked = false;
 
         DialogueBridge.Instance.Next();
     }
@@ -237,5 +224,10 @@ public class VNDialogueUI : MonoBehaviour
 
         leftCharacter.gameObject.SetActive(false);
         rightCharacter.gameObject.SetActive(false);
+    }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 }
