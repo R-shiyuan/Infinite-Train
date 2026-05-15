@@ -221,6 +221,50 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4021614408177567015, guid: 407d2b043b1338247948dfe17168ea0d, type: 3}
   m_PrefabInstance: {fileID: 953410298131957179}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &414593575
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 414593577}
+  - component: {fileID: 414593576}
+  m_Layer: 0
+  m_Name: MiniGameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &414593576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414593575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca54d2d9cce44e84e856952c51777e4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &414593577
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414593575}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 893.25183, y: 423.22137, z: 0.24291363}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &610459953
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,6 +374,14 @@ PrefabInstance:
       propertyPath: _serializedVariables.Array.data[0]._json
       value: '{"_value":"parent_D1_0","_name":"plotID","_id":"880c018c-9b6a-4af5-bcf3-e36dd69b0f9d","$type":"NodeCanvas.Framework.Variable`1[[System.String,
         mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755999535640159725, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
+      propertyPath: steps.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755999535640159725, guid: c4f1a31895305e44eaf8a077e8cb4187, type: 3}
+      propertyPath: steps.Array.data[0].plotID
+      value: Parent_Car1_Talk1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1904,22 +1956,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e35c218011744164fb2db5f530e5de17, type: 3}
---- !u!1 &8277097993868880485
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8753486631591021615}
-  m_Layer: 0
-  m_Name: UIManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!114 &8277613051831653852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1940,21 +1976,6 @@ MonoBehaviour:
   m_InputActionsPerSecond: 10
   m_RepeatDelay: 0.5
   m_ForceModuleActive: 0
---- !u!4 &8753486631591021615
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8277097993868880485}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.667467, y: -0.71583986, z: -23.94476}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &8762571894986911842
 Transform:
   m_ObjectHideFlags: 0
@@ -1987,10 +2008,10 @@ SceneRoots:
   - {fileID: 6132080436775856933}
   - {fileID: 5547205405862613228}
   - {fileID: 2654262611253009144}
-  - {fileID: 8753486631591021615}
   - {fileID: 3131840369982289022}
   - {fileID: 818435848462645249}
   - {fileID: 6072445013543053018}
   - {fileID: 677724551}
   - {fileID: 1724568690}
   - {fileID: 6226588577837045025}
+  - {fileID: 414593577}

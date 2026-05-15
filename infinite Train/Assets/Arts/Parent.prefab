@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8646193456304038129}
   - component: {fileID: 7346602352500216678}
   - component: {fileID: 8428198380402894657}
+  - component: {fileID: 8755999535640159725}
   m_Layer: 0
   m_Name: Parent
   m_TagString: NPC
@@ -97,10 +98,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outline: {fileID: 4914683694828523364}
-  dialogueController: {fileID: 6740267251693330156}
   activeDistance: 2
   canInteract: 1
-  memorySprite: {fileID: 21300000, guid: cd9e5badee95b934783efb99010e299e, type: 3}
   visualCenter: {fileID: 8864027366443781636}
 --- !u!114 &6740267251693330156
 MonoBehaviour:
@@ -174,7 +173,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9892c5881f2b5f040b9e4088fe8bf85f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueTree: {fileID: 6740267251693330156}
+--- !u!114 &8755999535640159725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846553690115565602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26599f0d69f929746b5b4ee05b7dc2c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcID: Parent
+  steps: []
+  currentStepIndex: 0
 --- !u!1 &1796042844993601831
 GameObject:
   m_ObjectHideFlags: 0

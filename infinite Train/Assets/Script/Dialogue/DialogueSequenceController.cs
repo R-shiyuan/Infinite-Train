@@ -1,80 +1,179 @@
-﻿using UnityEngine;
-using NodeCanvas.DialogueTrees;
+﻿
+using UnityEngine;
+using System;
 
 public class DialogueSequenceController : MonoBehaviour
 {
     public static DialogueSequenceController Instance;
 
     private NPC currentNPC;
-    private DialogueTreeController currentDialogue;
+
+    private string currentPlotID;
+
+    private Action onDialogueComplete;
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
     }
 
-    public void StartSequence(NPC npc, DialogueTreeController dialogueTree)
+    //====================================================
+    // 外部入口
+    //====================================================
+
+    public void StartPlot(
+        NPC npc,
+        string plotID,
+        Action onComplete
+    )
     {
-        if (npc == null || dialogueTree == null) return;
+        if (npc == null)
+            return;
 
         currentNPC = npc;
-        currentDialogue = dialogueTree;
 
-        Transform window = FindNearestWindow(npc);
+        currentPlotID = plotID;
+
+        onDialogueComplete = onComplete;
+
+        Transform window =
+            FindNearestWindow(npc);
+
         Sprite memory = null;
 
         if (MemoryDatabase.Instance != null)
-            memory = MemoryDatabase.Instance.GetMemory(npc);
+        {
+            memory =
+                MemoryDatabase.Instance.GetMemory(npc);
+        }
+
+        //------------------------------------------------
+        // 没有车窗 or 没有回忆图
+        //------------------------------------------------
 
         if (window == null || memory == null)
         {
             StartDialogue();
+
             return;
         }
 
-        CinemaTransitionManager.Instance.OnCinemaReady -= OnCinemaFinished;
-        CinemaTransitionManager.Instance.OnCinemaReady += OnCinemaFinished;
-        CinemaTransitionManager.Instance.Play(window, memory, dialogueTree);
+        //------------------------------------------------
+        // 播放电影效果
+        //------------------------------------------------
+
+        CinemaTransitionManager.Instance.OnCinemaReady -=
+            OnCinemaFinished;
+
+        CinemaTransitionManager.Instance.OnCinemaReady +=
+            OnCinemaFinished;
+
+        CinemaTransitionManager.Instance.Play(
+            window,
+            memory,
+            null
+        );
     }
+
+    //====================================================
+    // 电影结束
+    //====================================================
 
     void OnCinemaFinished()
     {
-        CinemaTransitionManager.Instance.OnCinemaReady -= OnCinemaFinished;
+        CinemaTransitionManager.Instance.OnCinemaReady -=
+            OnCinemaFinished;
+
         StartDialogue();
     }
 
+    //====================================================
+    // 开始对话
+    //====================================================
+
     void StartDialogue()
     {
-        if (currentDialogue != null && !currentDialogue.graph.isRunning)
-            currentDialogue.StartDialogue();
+        DialogueBridge.Instance.PlayPlot(
+            currentPlotID,
+            OnDialogueFinished
+        );
     }
 
-    // ========== 修改这里 ==========
-    private Transform FindNearestWindow(NPC npc)
+    //====================================================
+    // 对话结束
+    //====================================================
+
+    void OnDialogueFinished()
     {
-        GameObject[] windows = GameObject.FindGameObjectsWithTag("Window");
+        //------------------------------------------------
+        // 恢复NPC状态
+        //------------------------------------------------
+
+        if (currentNPC != null)
+        {
+            currentNPC.EndConversation();
+        }
+
+        //------------------------------------------------
+        // 通知剧情步骤结束
+        //------------------------------------------------
+
+        onDialogueComplete?.Invoke();
+
+        onDialogueComplete = null;
+    }
+
+    //====================================================
+    // 找最近车窗
+    //====================================================
+
+    private Transform FindNearestWindow(
+        NPC npc
+    )
+    {
+        GameObject[] windows =
+            GameObject.FindGameObjectsWithTag(
+                "Window"
+            );
+
         Transform nearest = null;
+
         float minDistSqr = float.MaxValue;
 
-        // 使用 NPC 的视觉中心位置（你先前已实现 GetVisualCenterPosition）
-        Vector3 visualPos = npc.GetVisualCenterPosition();
+        Vector3 visualPos =
+            npc.GetVisualCenterPosition();
 
         foreach (GameObject win in windows)
         {
-            BoxCollider2D col = win.GetComponent<BoxCollider2D>();
-            if (col == null) continue;   // 必须有 Collider 才能计算边界
+            BoxCollider2D col =
+                win.GetComponent<BoxCollider2D>();
 
-            // 计算视觉中心到车窗碰撞体表面的最近距离
-            Vector3 closestPoint = col.bounds.ClosestPoint(visualPos);
-            float d2 = (closestPoint - visualPos).sqrMagnitude;
+            if (col == null)
+                continue;
+
+            Vector3 closestPoint =
+                col.bounds.ClosestPoint(
+                    visualPos
+                );
+
+            float d2 =
+                (
+                    closestPoint -
+                    visualPos
+                ).sqrMagnitude;
 
             if (d2 < minDistSqr)
             {
                 minDistSqr = d2;
+
                 nearest = win.transform;
             }
         }
+
         return nearest;
     }
 }
+
