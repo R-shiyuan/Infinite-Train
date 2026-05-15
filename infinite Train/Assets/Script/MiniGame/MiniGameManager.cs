@@ -1,65 +1,44 @@
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using System;
 
 public class MiniGameManager : MonoBehaviour
 {
     public static MiniGameManager Instance;
 
-    private Action onMiniGameComplete;
+    private HashSet<string> completedGames = new HashSet<string>();
+    private System.Action onCompleteCallback;
+    private string currentGameID;
 
-    private string returnSceneName =
-        "CarriageScene";
-
-    void Awake()
+    private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+    public void Play(string gameID, System.Action onComplete)
+    {
+        currentGameID = gameID;
+        onCompleteCallback = onComplete;
+
+        Debug.Log("开始小游戏: " + gameID);
+    }
+
+    public void FinishGame(string gameID)
+    {
+        completedGames.Add(gameID);
+
+        Debug.Log("小游戏完成: " + gameID);
+
+        if (gameID == currentGameID)
         {
-            Destroy(gameObject);
+            onCompleteCallback?.Invoke();
+            onCompleteCallback = null;
+            currentGameID = null;
         }
     }
 
-    //====================================================
-    // 开始小游戏
-    //====================================================
-
-    public void Play(
-        string miniGameID,
-        Action callback
-    )
+    public bool IsCompleted(string gameID)
     {
-        onMiniGameComplete = callback;
-
-        string targetScene =
-            "Scene_Game_" + miniGameID;
-
-        Debug.Log(
-            "加载小游戏场景: " +
-            targetScene
-        );
-
-        SceneManager.LoadScene(targetScene);
-    }
-
-    //====================================================
-    // 小游戏完成
-    //====================================================
-
-    public void CompleteMiniGame()
-    {
-        Debug.Log("小游戏完成");
-
-        SceneManager.LoadScene(returnSceneName);
-
-        onMiniGameComplete?.Invoke();
-
-        onMiniGameComplete = null;
+        return completedGames.Contains(gameID);
     }
 }
-

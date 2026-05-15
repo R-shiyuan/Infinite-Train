@@ -3,15 +3,12 @@ using UnityEngine;
 public class NPCInteraction : MonoBehaviour, Interactable
 {
     private NPC npc;
-
     private NPCPlotController plotController;
 
     void Awake()
     {
         npc = GetComponent<NPC>();
-
-        plotController =
-            GetComponent<NPCPlotController>();
+        plotController = GetComponent<NPCPlotController>();
     }
 
     public void OnInteract()
@@ -35,7 +32,6 @@ public class NPCInteraction : MonoBehaviour, Interactable
 
         npc.BeginConversation();
 
-        plotController.ExecuteCurrentStep();
+        plotController.OnNPCClick();
     }
 }
-

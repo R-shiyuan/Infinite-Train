@@ -6,11 +6,8 @@ public class NPCPlotController : MonoBehaviour
     [Header("NPC唯一ID")]
     public string npcID;
 
-    [Header("剧情步骤")]
+    [Header("剧情节点")]
     public List<PlotStep> steps = new List<PlotStep>();
-
-    [Header("当前步骤")]
-    public int currentStepIndex = 0;
 
     private NPC npc;
 
@@ -19,152 +16,81 @@ public class NPCPlotController : MonoBehaviour
         npc = GetComponent<NPC>();
     }
 
-    //====================================================
-    // 对外入口
-    //====================================================
-
-    public void ExecuteCurrentStep()
+    public void OnNPCClick()
     {
-        if (currentStepIndex >= steps.Count)
+        EvaluateState();
+    }
+
+    // =========================================================
+    // 核心：状态驱动决策
+    // =========================================================
+    public void EvaluateState()
+    {
+        foreach (var step in steps)
         {
-            Debug.Log("剧情已全部完成");
-            return;
+            if (PlotConditionChecker.CanExecuteStep(this, step))
+            {
+                ExecuteStep(step);
+                return;
+            }
         }
 
-        PlotStep step = steps[currentStepIndex];
+        ShowBlockedHint();
+    }
 
+    // =========================================================
+    // 执行节点
+    // =========================================================
+    void ExecuteStep(PlotStep step)
+    {
         switch (step.stepType)
         {
             case PlotStepType.Dialogue:
-                ExecuteDialogue(step);
+                DialogueSequenceController.Instance.StartPlot(
+                    npc,
+                    step.plotID,
+                    OnStepFinished
+                );
                 break;
 
             case PlotStepType.MiniGame:
-                ExecuteMiniGame(step);
-                break;
-
-            case PlotStepType.WaitCondition:
-                ExecuteWaitCondition(step);
+                MiniGameManager.Instance.Play(
+                    step.miniGameID,
+                    OnStepFinished
+                );
                 break;
 
             case PlotStepType.UnlockNPC:
-                ExecuteUnlock(step);
+                GlobalManager.Instance.SetWorldState(step.unlockKey, true);
+                OnStepFinished();
                 break;
 
             case PlotStepType.UnlockItem:
-                ExecuteUnlock(step);
+                GlobalManager.Instance.SetWorldState(step.unlockKey, true);
+                OnStepFinished();
                 break;
 
             case PlotStepType.FinishNPC:
-                ExecuteFinishNPC(step);
+                GlobalManager.Instance.SetWorldState(npcID + "_finished", true);
+                OnStepFinished();
                 break;
         }
     }
 
-    //====================================================
-    // Dialogue
-    //====================================================
-
-    void ExecuteDialogue(PlotStep step)
-    {
-        Debug.Log("播放对话: " + step.plotID);
-
-        DialogueSequenceController.Instance.StartPlot(
-            npc,
-            step.plotID,
-            OnStepFinished
-        );
-    }
-
-    //====================================================
-    // MiniGame
-    //====================================================
-
-    void ExecuteMiniGame(PlotStep step)
-    {
-        Debug.Log("开始小游戏: " + step.miniGameID);
-
-        MiniGameManager.Instance.Play(
-            step.miniGameID,
-            OnStepFinished
-        );
-    }
-
-    //====================================================
-    // WaitCondition
-    //====================================================
-
-    void ExecuteWaitCondition(PlotStep step)
-    {
-        bool ok =
-            GlobalManager.Instance.GetWorldState(
-                step.requiredWorldState
-            );
-
-        if (ok)
-        {
-            Debug.Log("条件已满足");
-
-            OnStepFinished();
-        }
-        else
-        {
-            Debug.Log("条件未满足");
-
-            // 不推进
-            // 玩家需要之后再次点击
-        }
-    }
-
-    //====================================================
-    // Unlock
-    //====================================================
-
-    void ExecuteUnlock(PlotStep step)
-    {
-        GlobalManager.Instance.SetWorldState(
-            step.unlockKey,
-            true
-        );
-
-        Debug.Log("解锁: " + step.unlockKey);
-
-        OnStepFinished();
-    }
-
-    //====================================================
-    // Finish NPC
-    //====================================================
-
-    void ExecuteFinishNPC(PlotStep step)
-    {
-        Debug.Log("NPC剧情完成");
-
-        PresenceController pc =
-            GetComponent<PresenceController>();
-
-        if (pc != null)
-        {
-            GlobalManager.Instance.SetWorldState(
-                pc.finishedKey,
-                true
-            );
-        }
-
-        OnStepFinished();
-    }
-
-    //====================================================
-    // 步骤结束
-    //====================================================
-
+    // =========================================================
+    // Step完成回调（不再 +1 index）
+    // =========================================================
     void OnStepFinished()
     {
-        currentStepIndex++;
+        Debug.Log($"NPC {npcID} Step 完成");
+    }
 
-        Debug.Log(
-            $"进入下一步骤: {currentStepIndex}"
-        );
+    // =========================================================
+    // 阻塞提示
+    // =========================================================
+    void ShowBlockedHint()
+    {
+        Debug.Log($"NPC {npcID} 当前无可执行剧情");
+
     }
 }
-
