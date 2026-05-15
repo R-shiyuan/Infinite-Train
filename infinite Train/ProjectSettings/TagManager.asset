@@ -6,6 +6,7 @@ TagManager:
   tags:
   - NPC
   - Soup
+  - Window
   layers:
   - Default
   - TransparentFX
@@ -48,4 +49,15 @@ TagManager:
     locked: 0
   - name: Bowl
     uniqueID: 584964265
+  - name: inner_ground
+    uniqueID: 1794468083
+    locked: 0
+  - name: NPC_ground
+    uniqueID: 4192295945
+    locked: 0
+  - name: player
+    uniqueID: 458293385
+    locked: 0
+  - name: fore_ground
+    uniqueID: 1982354301
     locked: 0
