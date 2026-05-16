@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,10 +32,6 @@ public class VNDialogueUI : MonoBehaviour
     [Header("等待输入提示")]
     public GameObject waitInput;
 
-    [Header("选项")]
-    public RectTransform optionsGroup;
-    public Button optionButtonPrefab;
-
     [Header("打字机")]
     public SubtitleDelays subtitleDelays = new SubtitleDelays();
 
@@ -47,9 +42,26 @@ public class VNDialogueUI : MonoBehaviour
     private bool clicked;
     private Coroutine typingCoroutine;
 
+    private Sprite lastLeftSprite;
+    private Sprite lastRightSprite;
+
+    // =====================================================
+    // ✅ 核心修复：单例 + 防场景重复初始化
+    // =====================================================
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+
+        
+        DontDestroyOnLoad(gameObject);
+
+        
         HideAll();
     }
 
@@ -63,25 +75,25 @@ public class VNDialogueUI : MonoBehaviour
 
     void HideAll()
     {
-        dialoguePanel.SetActive(false);
-        waitInput.SetActive(false);
-        optionsGroup.gameObject.SetActive(false);
-        optionButtonPrefab.gameObject.SetActive(false);
+        if (dialoguePanel != null)
+            dialoguePanel.SetActive(false);
 
-        leftCharacter.gameObject.SetActive(false);
-        rightCharacter.gameObject.SetActive(false);
+        if (waitInput != null)
+            waitInput.SetActive(false);
+
+        if (leftCharacter != null)
+            leftCharacter.gameObject.SetActive(false);
+
+        if (rightCharacter != null)
+            rightCharacter.gameObject.SetActive(false);
     }
-
 
     public void ShowDialogue(DialogueRow row)
     {
         if (typingCoroutine != null)
-        {
             StopCoroutine(typingCoroutine);
-        }
 
-        typingCoroutine =
-            StartCoroutine(ShowDialogueCoroutine(row));
+        typingCoroutine = StartCoroutine(ShowDialogueCoroutine(row));
     }
 
     IEnumerator ShowDialogueCoroutine(DialogueRow row)
@@ -89,90 +101,76 @@ public class VNDialogueUI : MonoBehaviour
         clicked = false;
 
         dialoguePanel.SetActive(true);
-
-        //====================================================
-        // 名字
-        //====================================================
-
         nameText.text = row.actorName;
-
-        //====================================================
-        // 加载立绘
-        //====================================================
-
-        Sprite portrait =
-            Resources.Load<Sprite>(
-                "Portraits/" +
-                row.actorID +
-                "_" +
-                row.express
-            );
-
-        bool isLeft =
-            row.pos.ToLower() == "left";
-
-        //====================================================
-        // 设置立绘
-        //====================================================
-
-        if (portrait != null)
-        {
-            if (isLeft)
-            {
-                leftCharacter.gameObject.SetActive(true);
-                leftCharacter.sprite = portrait;
-            }
-            else
-            {
-                rightCharacter.gameObject.SetActive(true);
-                rightCharacter.sprite = portrait;
-            }
-        }
 
         bool isMonologue =
             row.state != null &&
             row.state.ToLower() == "monologue";
+
+        bool isLeft = row.pos.ToLower() == "left";
+
+        Sprite portrait = null;
+
+        if (!isMonologue)
+        {
+            portrait = Resources.Load<Sprite>(
+                "Portraits/" + row.actorID + "_" + row.express
+            );
+
+            if (portrait != null)
+            {
+                if (isLeft)
+                {
+                    leftCharacter.gameObject.SetActive(true);
+                    leftCharacter.sprite = portrait;
+                    lastLeftSprite = portrait;
+                }
+                else
+                {
+                    rightCharacter.gameObject.SetActive(true);
+                    rightCharacter.sprite = portrait;
+                    lastRightSprite = portrait;
+                }
+            }
+        }
+        else
+        {
+            if (lastLeftSprite != null)
+            {
+                leftCharacter.gameObject.SetActive(true);
+                leftCharacter.sprite = lastLeftSprite;
+            }
+
+            if (lastRightSprite != null)
+            {
+                rightCharacter.gameObject.SetActive(true);
+                rightCharacter.sprite = lastRightSprite;
+            }
+        }
 
         Color bright = Color.white;
         Color dim = new Color(1f, 1f, 1f, dimAlpha);
 
         if (isMonologue)
         {
-            // 👉 两边全部变暗
-            if (leftCharacter.gameObject.activeSelf)
-                leftCharacter.color = dim;
-
-            if (rightCharacter.gameObject.activeSelf)
-                rightCharacter.color = dim;
+            leftCharacter.color = dim;
+            rightCharacter.color = dim;
         }
         else
         {
-            //================================================
-            // 正常对话逻辑
-            //================================================
-
             if (isLeft)
             {
                 leftCharacter.color = bright;
-
-                if (rightCharacter.gameObject.activeSelf)
-                    rightCharacter.color = dim;
+                rightCharacter.color = dim;
             }
             else
             {
                 rightCharacter.color = bright;
-
-                if (leftCharacter.gameObject.activeSelf)
-                    leftCharacter.color = dim;
+                leftCharacter.color = dim;
             }
         }
 
-        //====================================================
-        // 打字机
-        //====================================================
-
         speechText.text = "";
-
         string fullText = row.text;
         string current = "";
 
@@ -186,7 +184,6 @@ public class VNDialogueUI : MonoBehaviour
 
             char c = fullText[i];
             current += c;
-
             speechText.text = current;
 
             float delay = subtitleDelays.characterDelay;
@@ -202,10 +199,6 @@ public class VNDialogueUI : MonoBehaviour
             yield return new WaitForSeconds(delay);
         }
 
-        //====================================================
-        // 等待点击继续
-        //====================================================
-
         clicked = false;
 
         if (waitForInput)
@@ -218,14 +211,8 @@ public class VNDialogueUI : MonoBehaviour
             waitInput.SetActive(false);
         }
 
-        clicked = false;
-
         DialogueBridge.Instance.Next();
     }
-
-    //========================================================
-    // 隐藏
-    //========================================================
 
     public void HideDialogue()
     {
@@ -237,5 +224,10 @@ public class VNDialogueUI : MonoBehaviour
 
         leftCharacter.gameObject.SetActive(false);
         rightCharacter.gameObject.SetActive(false);
+    }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 }

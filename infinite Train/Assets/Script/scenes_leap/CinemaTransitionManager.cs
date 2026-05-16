@@ -37,18 +37,21 @@ public class CinemaTransitionManager : MonoBehaviour
 
     void Awake()
     {
-        // --- 修复点 1：防止误杀整个物体 ---
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject); // ⭐必须加
         }
         else if (Instance != this)
         {
-            Debug.LogWarning($"检测到重复的脚本实例，正在清理脚本组件... 挂载物体：{gameObject.name}");
-            Destroy(this);
+            Destroy(gameObject);
             return;
         }
     }
+
+   
+
+
 
     void Start()
     {
@@ -56,7 +59,18 @@ public class CinemaTransitionManager : MonoBehaviour
         if (mainCamera != null)
             cameraFollow = mainCamera.GetComponent<CameraFollow>();
     }
+    private void EnsureCamera()
+    {
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
 
+        if (cameraFollow == null && mainCamera != null)
+        {
+            cameraFollow = mainCamera.GetComponent<CameraFollow>();
+        }
+    }
     public void Play(Transform window, Sprite memory, DialogueTreeController dc)
     {
         if (isPlaying) return;
@@ -76,6 +90,13 @@ public class CinemaTransitionManager : MonoBehaviour
 
     private IEnumerator PlayCoroutine()
     {
+        EnsureCamera();
+
+        if (mainCamera == null)
+        {
+            Debug.LogError("CinemaTransitionManager: 找不到主摄像机");
+            yield break;
+        }
         isPlaying = true;
         Debug.Log("播放车窗电影效果...");
 

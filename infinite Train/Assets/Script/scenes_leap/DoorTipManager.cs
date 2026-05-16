@@ -12,19 +12,16 @@ public class DoorTipManager : MonoBehaviour
 
     void Awake()
     {
-        //  强制根化
-        transform.SetParent(null);
-
-        // 单例 + 全局不销毁
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        if (Instance != null)
         {
             Destroy(gameObject);
+            return;
         }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        HideAllTips();
     }
 
     // 显示左边提示

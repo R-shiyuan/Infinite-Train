@@ -1,31 +1,39 @@
 ﻿using UnityEngine;
-using NodeCanvas.DialogueTrees;
+using System;
 
 public class DialogueSequenceController : MonoBehaviour
 {
     public static DialogueSequenceController Instance;
 
     private NPC currentNPC;
-    private DialogueTreeController currentDialogue;
+    private string currentPlotID;
+    private Action onDialogueComplete;
 
-    void Awake()
+    private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
-    public void StartSequence(NPC npc, DialogueTreeController dialogueTree)
+    public void StartPlot(NPC npc, string plotID, Action onComplete)
     {
-        if (npc == null || dialogueTree == null) return;
+        if (npc == null) return;
 
         currentNPC = npc;
-        currentDialogue = dialogueTree;
+        currentPlotID = plotID;
+        onDialogueComplete = onComplete;
 
         Transform window = FindNearestWindow(npc);
-        Sprite memory = null;
 
-        if (MemoryDatabase.Instance != null)
-            memory = MemoryDatabase.Instance.GetMemory(npc);
+        Sprite memory = MemoryDatabase.Instance != null
+            ? MemoryDatabase.Instance.GetMemory(npc)
+            : null;
 
         if (window == null || memory == null)
         {
@@ -35,7 +43,8 @@ public class DialogueSequenceController : MonoBehaviour
 
         CinemaTransitionManager.Instance.OnCinemaReady -= OnCinemaFinished;
         CinemaTransitionManager.Instance.OnCinemaReady += OnCinemaFinished;
-        CinemaTransitionManager.Instance.Play(window, memory, dialogueTree);
+
+        CinemaTransitionManager.Instance.Play(window, memory, null);
     }
 
     void OnCinemaFinished()
@@ -46,28 +55,34 @@ public class DialogueSequenceController : MonoBehaviour
 
     void StartDialogue()
     {
-        if (currentDialogue != null && !currentDialogue.graph.isRunning)
-            currentDialogue.StartDialogue();
+        DialogueBridge.Instance.PlayPlot(currentPlotID, OnDialogueFinished);
     }
 
-    // ========== 修改这里 ==========
+    void OnDialogueFinished()
+    {
+        if (currentNPC != null)
+            currentNPC.EndConversation();
+
+        onDialogueComplete?.Invoke();
+        onDialogueComplete = null;
+    }
+
     private Transform FindNearestWindow(NPC npc)
     {
         GameObject[] windows = GameObject.FindGameObjectsWithTag("Window");
+
         Transform nearest = null;
         float minDistSqr = float.MaxValue;
 
-        // 使用 NPC 的视觉中心位置（你先前已实现 GetVisualCenterPosition）
-        Vector3 visualPos = npc.GetVisualCenterPosition();
+        Vector3 pos = npc.GetVisualCenterPosition();
 
         foreach (GameObject win in windows)
         {
             BoxCollider2D col = win.GetComponent<BoxCollider2D>();
-            if (col == null) continue;   // 必须有 Collider 才能计算边界
+            if (col == null) continue;
 
-            // 计算视觉中心到车窗碰撞体表面的最近距离
-            Vector3 closestPoint = col.bounds.ClosestPoint(visualPos);
-            float d2 = (closestPoint - visualPos).sqrMagnitude;
+            Vector3 closest = col.bounds.ClosestPoint(pos);
+            float d2 = (closest - pos).sqrMagnitude;
 
             if (d2 < minDistSqr)
             {
@@ -75,6 +90,7 @@ public class DialogueSequenceController : MonoBehaviour
                 nearest = win.transform;
             }
         }
+
         return nearest;
     }
 }

@@ -45,9 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pushDuration: 1.2
-  finalOrthoSize: 2.5
-  cameraOffset: {x: 0, y: 0, z: -2}
-  maskAlpha: 0.8
+  finalOrthoSize: 1.7
+  cameraOffset: {x: 0, y: -0.3, z: -2}
+  maskAlpha: 1
   eleganceCurve:
     serializedVersion: 2
     m_Curve:
@@ -72,3 +72,5 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  targetScreenWidthRatio: 0.7
+  targetAspect: 2.5
