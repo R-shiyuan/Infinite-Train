@@ -739,7 +739,7 @@ GameObject:
   - component: {fileID: 240140020}
   - component: {fileID: 240140019}
   m_Layer: 0
-  m_Name: liangyijia
+  m_Name: background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3454,6 +3454,10 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 918479908}
+  - {fileID: 1786201550}
+  - {fileID: 1864718136}
+  - {fileID: 1964579679}
+  - {fileID: 8411814900506690796}
   - {fileID: 965026564}
   - {fileID: 1294831932}
   - {fileID: 1398363153}
@@ -3474,7 +3478,3 @@ SceneRoots:
   - {fileID: 713109369}
   - {fileID: 162608723}
   - {fileID: 1636601090}
-  - {fileID: 1786201550}
-  - {fileID: 1864718136}
-  - {fileID: 1964579679}
-  - {fileID: 8411814900506690796}

@@ -6,10 +6,12 @@ public class SugarManager : MonoBehaviour
 {
     public Transform[] sugars;
     public Transform[] sugarPaper;
+    public Transform VicBoard;
     private int sugarAmount;
     private int showIndex = 0;
     private void Awake()
     {
+        VicBoard.gameObject.SetActive(false);
         for (int i = 0;i<sugarPaper.Length;i++) 
             sugarPaper[i].gameObject.SetActive(false);
 
@@ -25,6 +27,6 @@ public class SugarManager : MonoBehaviour
     }
     public void Vic()
     {
-        Debug.Log("111");
+        VicBoard.gameObject.SetActive(true);
     }
 }
