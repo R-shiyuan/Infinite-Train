@@ -20,4 +20,31 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/car-3.unity
     guid: 946dfa5f3ea67414ba274dcd63270e8d
+  - enabled: 1
+    path: Assets/Scenes/Scene_Game_ServeSoup.unity
+    guid: a9a2854b2f3faf7488182dd6764c3ccd
+  - enabled: 1
+    path: Assets/Scenes/Scene_Game_WashClothes.unity
+    guid: e62c6e4c54dab6d49a38242086ffb422
+  - enabled: 1
+    path: Assets/Scenes/Scene_Game_Exam.unity
+    guid: da952bf1e77e6724fb479f2656ade630
+  - enabled: 1
+    path: Assets/Scenes/Scene_Game_CleanPic.unity
+    guid: acc758ddaf75c2e4ea2a94c468b24422
+  - enabled: 1
+    path: Assets/Scenes/Scene_Game_FixRadio.unity
+    guid: 8a044a6590e37884e90b2aa555e961c4
+  - enabled: 1
+    path: Assets/Scenes/Scene_Game_CloseCoffin.unity
+    guid: 4eb4d431d23c95f47b22d5ca20347617
+  - enabled: 1
+    path: Assets/Scenes/Scene_Game_WoodCraft.unity
+    guid: 07d0403fecefe1a48ab400db854b28f6
+  - enabled: 1
+    path: Assets/Scenes/Scene_Game_Sugar.unity
+    guid: bedf369b5b707c041adac605a43cee23
+  - enabled: 1
+    path: Assets/Scenes/miniGame_9.unity
+    guid: cbf001dccfca4f042b0dc2f4e7e811c0
   m_configObjects: {}
